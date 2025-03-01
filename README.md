@@ -11,7 +11,7 @@ This project is a **web platform** for booking taxis and private cars (VTC) in *
 - **RESTful API** – Backend built with FastAPI for efficient data handling.  
 
 ## 🏗️ Tech Stack  
-- **Frontend:** React.js / Vue.js, TailwindCSS  
+- **Frontend:** React.js / Vue.js
 - **Backend:** FastAPI, Python  
 - **Database:** PostgreSQL  
 - **Machine Learning:** scikit-learn  
