@@ -1,10 +1,30 @@
 """ User related CRUD methods """
 from typing import Any
 
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 
 from app.core.security import get_password_hash, verify_password
-from app.models import User, UserCreate, UserUpdate
+from app.models import (
+    User,
+    UserRole,
+    UserCreate,
+    UserUpdate,
+    UserUpdateMe,
+    UpdatePassword,
+    UsersOut,
+    Message
+)
+
+def read_users(*, session: Session, skip: int, limit: int):
+    count_statement = select(func.count()).select_from(User)
+    count = session.exec(count_statement).one()
+    statement = select(User).offset(skip).limit(limit)
+    users = session.exec(statement).all()
+    return UsersOut(data=users, count=count)
+
+
+def read_user_by_id(session: Session, user_id: int) -> User:
+    return session.get(User, user_id)
 
 
 def create_user(*, session: Session, user_create: UserCreate) -> User:
@@ -15,6 +35,23 @@ def create_user(*, session: Session, user_create: UserCreate) -> User:
     session.commit()
     session.refresh(db_obj)
     return db_obj
+
+
+def update_user_me(*, session: Session, user_in: UserUpdateMe, current_user: User):
+    user_data = user_in.model_dump(exclude_unset=True)
+    current_user.sqlmodel_update(user_data)
+    session.add(current_user)
+    session.commit()
+    session.refresh(current_user)
+    return current_user
+
+
+def update_password_me(*, session: Session, body: UpdatePassword, current_user: User) -> Message:
+    hashed_password = get_password_hash(body.new_password)
+    current_user.hashed_password = hashed_password
+    session.add(current_user)
+    session.commit()
+    return Message(message="Password updated successfully")
 
 
 def update_user(*, session: Session, db_user: User, user_in: UserUpdate) -> Any:
