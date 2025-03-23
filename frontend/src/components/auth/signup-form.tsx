@@ -1,22 +1,18 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import { registerUser, State } from "@/lib/actions";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Image from 'next/image';
 
 
 export default function SignUpForm() {
   const initialState: State = { message: "", errors: {}, isLoading: false, serverError: "" };
   const [state, formAction] = useActionState(registerUser, initialState);
-
-
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [serverError, setServerError] = useState<string | null>(null);
-
 
   return (
     <div className="flex flex-col gap-6">
@@ -126,15 +122,21 @@ export default function SignUpForm() {
             </div>
           </form>
 
-          <div className="bg-muted relative hidden md:block">
-            <img
-              src="/placeholder.svg"
-              alt="Image"
-              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          <div className="bg-muted relative hidden md:block" style={{ height: '650px' }}>
+            <Image
+              src="/tibidabo.jpg"
+              width={500} // Aspect ratio width
+              height={100} // Aspect ratio height
+              className="hidden md:block object-cover w-full h-full"
+              alt="Tibidabo Barcelona"
             />
           </div>
         </CardContent>
       </Card>
+
+      {/******************************************************************************/}
+      {/* Complete this later, add links to terms and conditions and privacy policy. */}
+      {/******************************************************************************/}
 
       <div className="text-muted-foreground text-center text-xs">
         By signing up, you agree to our{" "}
