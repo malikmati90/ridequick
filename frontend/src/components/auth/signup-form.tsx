@@ -2,11 +2,11 @@
 
 import { useActionState } from "react";
 import { registerUser, State } from "@/lib/actions";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Link from 'next/link';
 import Image from 'next/image';
 
 
@@ -113,21 +113,26 @@ export default function SignUpForm() {
               {state.serverError && <p className="text-red-500 text-center text-sm">{state.serverError}</p>}
 
               {/* Already have an account */}
-              <div className="text-center text-sm">
-                Already have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
-                  Login
-                </a>
+              <div>
+                
               </div>
+              <Link 
+                href={'/login'}
+                className="text-center text-sm">
+                Already have an account?{" "}
+                <span className="underline underline-offset-4">
+                  Login
+                </span>
+              </Link>
             </div>
           </form>
 
-          <div className="bg-muted relative hidden md:block" style={{ height: '650px' }}>
+          <div className="bg-muted relative hidden md:block">
             <Image
               src="/tibidabo.jpg"
               width={500} // Aspect ratio width
               height={100} // Aspect ratio height
-              className="hidden md:block object-cover w-full h-full"
+              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
               alt="Tibidabo Barcelona"
             />
           </div>
