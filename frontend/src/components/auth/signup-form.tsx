@@ -23,7 +23,7 @@ export default function SignUpForm() {
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold">Create an Account</h1>
                 <p className="text-muted-foreground text-balance">
-                  Sign up to start using the platform
+                  Sign up to start booking your rides
                 </p>
               </div>
 
