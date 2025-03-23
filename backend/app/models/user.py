@@ -12,7 +12,7 @@ class UserRole(str, Enum):
 class UserBase(SQLModel):
     email: EmailStr = Field(unique=True, index=True, max_length=255)
     full_name: str | None = Field(default=None, max_length=255)
-    phone_number: int | None
+    phone_number: str | None = Field(default=None, max_length=15)
     role: UserRole = Field(default=UserRole.passenger)
     is_active: bool = True
 
@@ -31,7 +31,7 @@ class UserRegister(SQLModel):
     email: EmailStr = Field(max_length=255)
     password: str = Field(min_length=8, max_length=40)
     full_name: str | None = Field(default=None, max_length=255)
-    phone_number: int | None
+    phone_number: str | None = Field(default=None, max_length=15)
 
 
 # Properties to receive via API on update, all are optional
