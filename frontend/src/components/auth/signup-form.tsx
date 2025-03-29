@@ -2,11 +2,11 @@
 
 import { useActionState } from "react";
 import { registerUser, State } from "@/lib/actions";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Link from 'next/link';
 import Image from 'next/image';
 
 
@@ -40,9 +40,9 @@ export default function SignUpForm() {
                 <div id="fullName-error" aria-live="polite" aria-atomic="true">
                   {state.errors?.fullName &&
                     state.errors.fullName.map((error: string) => (
-                      <p className="mt-2 text-sm text-red-500" key={error}>
+                      <span className="mt-2 text-xs text-red-500" key={error}>
                         {error}
-                      </p>
+                      </span>
                     ))}
                 </div>
               </div>
@@ -60,9 +60,9 @@ export default function SignUpForm() {
                 <div id="email-error" aria-live="polite" aria-atomic="true">
                   {state.errors?.email &&
                     state.errors.email.map((error: string) => (
-                      <p className="mt-2 text-sm text-red-500" key={error}>
+                      <span className="mt-2 text-xs text-red-500" key={error}>
                         {error}
-                      </p>
+                      </span>
                     ))}
                 </div>
               </div>
@@ -75,11 +75,16 @@ export default function SignUpForm() {
                   type="password"
                   name="password"
                   aria-describedby="password-error"
+                  onChange={() => {
+                    if (state.errors?.password) {
+                      state.errors.password = []; // Clear password errors dynamically
+                    }
+                  }}
                 />
                 <div id="password-error" aria-live="polite" aria-atomic="true">
                   {state.errors?.password &&
                     state.errors.password.map((error: string) => (
-                      <p className="mt-2 text-sm text-red-500" key={error}>
+                      <p className="mt-2 text-xs text-red-500" key={error}>
                         {error}
                       </p>
                     ))}
@@ -98,9 +103,9 @@ export default function SignUpForm() {
                 <div id="phoneNumber-error" aria-live="polite" aria-atomic="true">
                   {state.errors?.phoneNumber &&
                     state.errors.phoneNumber.map((error: string) => (
-                      <p className="mt-2 text-sm text-red-500" key={error}>
+                      <span className="mt-2 text-xs text-red-500" key={error}>
                         {error}
-                      </p>
+                      </span>
                     ))}
                 </div>
               </div>
@@ -113,21 +118,26 @@ export default function SignUpForm() {
               {state.serverError && <p className="text-red-500 text-center text-sm">{state.serverError}</p>}
 
               {/* Already have an account */}
-              <div className="text-center text-sm">
-                Already have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
-                  Login
-                </a>
+              <div>
+                
               </div>
+              <Link 
+                href={'/login'}
+                className="text-center text-sm">
+                Already have an account?{" "}
+                <span className="underline underline-offset-4">
+                  Login
+                </span>
+              </Link>
             </div>
           </form>
 
-          <div className="bg-muted relative hidden md:block" style={{ height: '650px' }}>
+          <div className="bg-muted relative hidden md:block">
             <Image
               src="/tibidabo.jpg"
               width={500} // Aspect ratio width
               height={100} // Aspect ratio height
-              className="hidden md:block object-cover w-full h-full"
+              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
               alt="Tibidabo Barcelona"
             />
           </div>
