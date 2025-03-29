@@ -5,7 +5,7 @@ const MAX_LENGTH = 40;
 
 export const SignUpSchema = z.object({
   email: z.string().email({
-    message: "Invalid email format. Please enter a valid email address.",
+    message: "Please enter a valid email address.",
   }),
   
   fullName: z.string()

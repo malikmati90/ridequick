@@ -40,9 +40,9 @@ export default function SignUpForm() {
                 <div id="fullName-error" aria-live="polite" aria-atomic="true">
                   {state.errors?.fullName &&
                     state.errors.fullName.map((error: string) => (
-                      <p className="mt-2 text-sm text-red-500" key={error}>
+                      <span className="mt-2 text-xs text-red-500" key={error}>
                         {error}
-                      </p>
+                      </span>
                     ))}
                 </div>
               </div>
@@ -60,9 +60,9 @@ export default function SignUpForm() {
                 <div id="email-error" aria-live="polite" aria-atomic="true">
                   {state.errors?.email &&
                     state.errors.email.map((error: string) => (
-                      <p className="mt-2 text-sm text-red-500" key={error}>
+                      <span className="mt-2 text-xs text-red-500" key={error}>
                         {error}
-                      </p>
+                      </span>
                     ))}
                 </div>
               </div>
@@ -75,11 +75,16 @@ export default function SignUpForm() {
                   type="password"
                   name="password"
                   aria-describedby="password-error"
+                  onChange={() => {
+                    if (state.errors?.password) {
+                      state.errors.password = []; // Clear password errors dynamically
+                    }
+                  }}
                 />
                 <div id="password-error" aria-live="polite" aria-atomic="true">
                   {state.errors?.password &&
                     state.errors.password.map((error: string) => (
-                      <p className="mt-2 text-sm text-red-500" key={error}>
+                      <p className="mt-2 text-xs text-red-500" key={error}>
                         {error}
                       </p>
                     ))}
@@ -98,9 +103,9 @@ export default function SignUpForm() {
                 <div id="phoneNumber-error" aria-live="polite" aria-atomic="true">
                   {state.errors?.phoneNumber &&
                     state.errors.phoneNumber.map((error: string) => (
-                      <p className="mt-2 text-sm text-red-500" key={error}>
+                      <span className="mt-2 text-xs text-red-500" key={error}>
                         {error}
-                      </p>
+                      </span>
                     ))}
                 </div>
               </div>
