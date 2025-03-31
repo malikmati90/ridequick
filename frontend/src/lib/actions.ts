@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { SignUpSchema } from "./zodSchemas"
 import { AuthError } from 'next-auth';
-import { signIn } from '../../auth';
+import { signIn } from '../auth';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
