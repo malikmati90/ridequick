@@ -46,13 +46,14 @@ async function authenticate(email: string, password: string) {
         const userDetails = await fetchUserDetails(data.access_token);
         if (!userDetails) throw new Error("User details not found");
 
-        const user: User = {
+        const user = {
             id: userDetails.id,
             email: userDetails.email,
             fullName: userDetails.fullName,
             phoneNumber: userDetails.phoneNumber,
-            role: userDetails.role
-        }
+            role: userDetails.role,
+        } as User
+
         return user;
 
     } catch (error) {
@@ -87,4 +88,5 @@ export const { auth, signIn, signOut } = NextAuth({
             },
         }),
     ],
+    secret: process.env.AUTH_SECRET,
 });

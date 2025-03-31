@@ -1,30 +1,35 @@
 import type { NextAuthConfig } from 'next-auth';
  
 export const authConfig = {
+  pages: {
+    signIn: '/login',
+  },
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = auth?.user;
-      console.log("isLoggedIn: ", isLoggedIn)
+    async authorized({ auth, request }) {
+      const nextUrl = request.nextUrl;
       const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
-      console.log("isOnDashboard: ", isOnDashboard)
-
+      const isLoggedIn = !!auth?.user;
+      const isAdmin = auth?.user?.role === 'admin';  // Ensure token exists before checking role
+  
       if (isOnDashboard) {
-        if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login page
-      } else if (isLoggedIn) {
-        return Response.redirect(new URL('/dashboard', nextUrl));
+        if (!isLoggedIn || !isAdmin) {
+          // If not logged in or not admin, redirect to home page
+          return Response.redirect(new URL('/', nextUrl));
+        }
+        return true; // Allow admin access to dashboard
       }
-      return true;
+  
+      return true; // Allow access to other pages
+    },
+    async session({ session, token }) {
+      if (session.user) session.user.role = token.role as string
+      return session;
+    },
+    async jwt({ token, user}) {
+      if (user) token.role = user.role;
+      return token;
     },
   },
-  // async jwt({ token, user }) {
-  //   if (user) token.role = user.role;
-  //   return token;
-  // },
-  // async session({ session, token }) {
-  //   if (session?.user) session.user.role = token.role;
-  //   return session;
-  // },
   
   providers: [], // Add providers with an empty array for now
 } satisfies NextAuthConfig;

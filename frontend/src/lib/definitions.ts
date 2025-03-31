@@ -8,4 +8,5 @@ export type User = {
     fullName: string;
     phoneNumber: string;
     role: string;
+    // emailVerified: Date;
   };
