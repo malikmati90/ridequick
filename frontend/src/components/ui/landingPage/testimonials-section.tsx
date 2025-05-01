@@ -28,7 +28,7 @@ export default function TestimonialsSection() {
       <div className="max-w-screen-xl mx-auto px-6 text-center">
         {/* Title and Introduction */}
         <h2 className="text-3xl font-extrabold text-gray-900">What Our Customers Say</h2>
-        <p className="mt-4 text-lg text-gray-600">Don't just take our word for it. Here&apos;s what our satisfied customers have to say about their experiences with us.</p>
+        <p className="mt-4 text-lg text-gray-600">Don&apos;t just take our word for it. Here&apos;s what our satisfied customers have to say about their experiences with us.</p>
         
         {/* Testimonials Grid */}
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
