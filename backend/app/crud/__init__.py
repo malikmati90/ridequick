@@ -2,3 +2,4 @@
 # Import all modules
 from . import user
 from . import driver
+from . import vehicle

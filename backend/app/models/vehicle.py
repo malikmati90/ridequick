@@ -17,7 +17,7 @@ class VehicleBase(SQLModel):
     capacity: int = Field(default=4)  # passengers
     category: VehicleCategory = Field(default=VehicleCategory.economy)
     is_active: bool = True
-
+    is_company_owned: bool = Field(default=False)
 
 # DB model
 class Vehicle(VehicleBase, table=True):
@@ -41,11 +41,14 @@ class VehicleUpdate(SQLModel):
     driver_id: Optional[int] = None
 
 
-
 # For API output
 class VehicleOut(VehicleBase):
     id: int
     driver_id: int
+
+class VehiclesOut(SQLModel):
+    data: list[VehicleOut]
+    count: int
 
 
 # To avoid circular import issues 
