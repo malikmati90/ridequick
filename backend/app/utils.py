@@ -11,6 +11,7 @@ import jwt
 from jwt.exceptions import InvalidTokenError
 from app.core.config import settings
 
+from app.models import Driver, DriverFullOut
 
 @dataclass
 class EmailData:
@@ -115,3 +116,17 @@ def verify_password_reset_token(token: str) -> str | None:
         return str(decoded_token["sub"])
     except InvalidTokenError:
         return None
+    
+
+def flatten_driver_data(driver: Driver) -> DriverFullOut:
+    user = driver.user
+    return DriverFullOut(
+        id=driver.id,
+        user_id=user.id,
+        email=user.email,
+        full_name=user.full_name,
+        phone_number=user.phone_number,
+        role=user.role,
+        license_number=driver.license_number,
+        is_active=driver.is_active
+    )
