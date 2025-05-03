@@ -15,7 +15,6 @@ from app.core.security import get_password_hash, verify_password
 from app.models import (
     Message,
     UpdatePassword,
-    User,
     UserRole,
     UserCreate,
     UserRegister,
