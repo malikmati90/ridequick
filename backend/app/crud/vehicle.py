@@ -27,6 +27,16 @@ def read_vehicles(*, session: Session, skip: int = 0, limit: int = 100) -> Vehic
     return VehiclesOut(data=vehicles, count=count)
 
 
+def read_vehicles_by_driver(*, session: Session, driver_id: int) -> list[Vehicle]:
+    statement = select(Vehicle).where(Vehicle.driver_id == driver_id)
+    return session.exec(statement).all()
+
+
+def read_company_owned_vehicles(*, session: Session) -> list[Vehicle]:
+    statement = select(Vehicle).where(Vehicle.is_company_owned == True)
+    return session.exec(statement).all()
+
+
 def update_vehicle(*, session: Session, db_vehicle: Vehicle, vehicle_in: VehicleUpdate) -> Vehicle:
     vehicle_data = vehicle_in.model_dump(exclude_unset=True)
     db_vehicle.sqlmodel_update(vehicle_data)

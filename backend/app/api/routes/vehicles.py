@@ -74,3 +74,27 @@ def delete_vehicle(vehicle_id: int, session: SessionDep) -> Message:
     
     crud.vehicle.delete_vehicle(session=session, db_vehicle=db_vehicle)
     return Message(message="Vehicle deleted successfully")
+
+
+####################################################################################
+############################### Additional Endpoints ###############################
+####################################################################################
+@router.get(
+    "/driver/{driver_id}",
+    dependencies=[Depends(get_current_active_superuser)],
+    response_model=VehiclesOut
+)
+def read_vehicles_by_driver(driver_id: int, session: SessionDep) -> VehiclesOut:
+    # Check if driver exists
+    driver = crud.driver.read_driver_by_id(session=session, driver_id=driver_id)
+    if not driver:
+        raise HTTPException(status_code=404, detail="Driver not found")
+
+    vehicles = crud.vehicle.read_vehicles_by_driver(session=session, driver_id=driver_id)
+    return VehiclesOut(data=vehicles, count=len(vehicles))
+
+
+@router.get("/company", response_model=VehiclesOut)
+def read_company_owned_vehicles(session: SessionDep) -> VehiclesOut:
+    vehicles = crud.vehicle.read_company_owned_vehicles(session=session)
+    return VehiclesOut(data=vehicles, count=len(vehicles))
