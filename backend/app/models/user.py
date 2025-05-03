@@ -38,14 +38,14 @@ class UserRegister(SQLModel):
 class UserUpdate(UserBase):
     email: EmailStr | None = None  # type: ignore
     full_name: str | None = None
-    phone_number: int | None = None
+    phone_number: str | None = None
     password: str | None = None
 
 
 class UserUpdateMe(SQLModel):
     email: EmailStr | None = None
     full_name: str | None = None
-    phone_number: int | None = None
+    phone_number: str | None = None
 
 class UpdatePassword(SQLModel):
     current_password: str
