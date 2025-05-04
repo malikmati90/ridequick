@@ -7,6 +7,7 @@ from app.api.routes import (
     utils,
     drivers,
     vehicles,
+    bookings,
 )
 
 api_router = APIRouter()
@@ -15,4 +16,4 @@ api_router.include_router(users.router, prefix="/users", tags=["users"])
 api_router.include_router(utils.router, prefix="/utils", tags=["utils"])
 api_router.include_router(drivers.router, prefix="/drivers", tags=["drivers"])
 api_router.include_router(vehicles.router, prefix="/vehicles", tags=["vehicles"])
-# api_router.include_router(utils.router, prefix="/bookings", tags=["bookings"])
+api_router.include_router(bookings.router, prefix="/bookings", tags=["bookings"])

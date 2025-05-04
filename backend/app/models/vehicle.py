@@ -2,13 +2,13 @@
 from enum import Enum
 from sqlmodel import Relationship, SQLModel, Field
 from typing import Optional
-from datetime import date
 
 
 class VehicleCategory(str, Enum):
     economy = "economy"
     standard = "standard"
     premium = "premium"
+
 
 # Shared properties
 class VehicleBase(SQLModel):

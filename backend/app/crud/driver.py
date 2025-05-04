@@ -17,7 +17,19 @@ from app.models import (
     DriverFullOut,
     Message
 )
-from app.utils import flatten_driver_data
+
+def flatten_driver_data(driver: Driver) -> DriverFullOut:
+    user = driver.user
+    return DriverFullOut(
+        id=driver.id,
+        user_id=user.id,
+        email=user.email,
+        full_name=user.full_name,
+        phone_number=user.phone_number,
+        role=user.role,
+        license_number=driver.license_number,
+        is_active=driver.is_active
+    )
 
 
 def read_drivers(*, session: Session, skip: int = 0, limit: int = 100) -> DriversOut:
