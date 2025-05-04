@@ -7,14 +7,14 @@ from typing import Optional, Union
 from enum import Enum
 from datetime import datetime
 
+from .payment import PaymentMethod
 from .vehicle import VehicleCategory
-
-def now_madrid():
-    return datetime.now(ZoneInfo("Europe/Madrid"))
+from app.utils.time import now_madrid
 
 
 class BookingStatus(str, Enum):
     pending = "pending"
+    confirmed = "confirmed"
     assigned = "assigned"
     completed = "completed"
     canceled = "canceled"
@@ -37,8 +37,6 @@ class Booking(BookingBase, table=True):
     user_id: int = Field(foreign_key="user.id")
     driver_id: Optional[int] = Field(default=None, foreign_key="driver.id")
 
-    payment_method: Optional[str] = None
-    payment_status: Optional[str] = None
     cancellation_reason: Optional[str] = None
     rating_given: Optional[int] = None
     distance_km: Optional[float] = None
@@ -56,6 +54,8 @@ class Booking(BookingBase, table=True):
     
     user: "User" = Relationship(back_populates="bookings")
     driver: Optional["Driver"] = Relationship(back_populates="bookings")
+    payment: Optional["Payment"] = Relationship(back_populates="booking")
+
 
 
 class BookingCreateMe(SQLModel):
@@ -64,18 +64,10 @@ class BookingCreateMe(SQLModel):
     scheduled_time: datetime
     vehicle_category: VehicleCategory
     passenger_count: int = Field(default=1)
-
-    @field_validator("scheduled_time")
-    def must_be_future(cls, v: datetime):
-        if v <= datetime.now(ZoneInfo("Europe/Madrid")):
-            raise ValueError("scheduled_time must be in the future")
-        return v
-
-    @field_validator("passenger_count")
-    def min_passengers(cls, v: int):
-        if v < 1:
-            raise ValueError("passenger_count must be at least 1")
-        return v
+    distance_km: float
+    duration_minutes: int
+    fare: float
+    payment_method: PaymentMethod
 
 
 class BookingCreateAdmin(BookingCreateMe):

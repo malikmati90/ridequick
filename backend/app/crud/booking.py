@@ -18,6 +18,7 @@ def _flatten(b: Booking) -> BookingFullOut:
     # (Session.refresh should have been called where needed)
     u = b.user
     d = b.driver
+    p = b.payment
     return BookingFullOut(
         pickup_location=b.pickup_location,
         dropoff_location=b.dropoff_location,
@@ -33,6 +34,8 @@ def _flatten(b: Booking) -> BookingFullOut:
         vehicle_category=b.vehicle_category,
         duration_minutes=b.duration_minutes,
         distance_km=(b.distance_km if b.distance_km else None),
+        payment_status=(p.status if p else None),
+        payment_method=(p.method if p else None),
         created_at=b.created_at,
         updated_at=b.updated_at
     )
@@ -41,31 +44,24 @@ def _flatten(b: Booking) -> BookingFullOut:
 def create_booking_me(
     *, session: Session, booking_in: BookingCreateMe, current_user: User
 ) -> BookingFullOut:
-    # Compute real distance & duration from frontend-provided addresses
-    # dist_km, dur_min = get_route_info(booking_in.pickup_location, booking_in.dropoff_location)
-
-    # Calculate fare based on distance, category, passengers, etc.
-    # fare = calculate_fare(
-    #     category=booking_in.vehicle_category,
-    #     distance_km=dist_km,
-    #     scheduled_time=booking_in.scheduled_time,
-    #     is_airport=False,
-    #     is_holiday=False,
-    #     passenger_count=booking_in.passenger_count
-    # )
-
-    # Create booking instance
-    booking_data = booking_in.model_dump()
+    
+    booking_data = booking_in.model_dump(exclude={"payment_method"})
     booking = Booking(**booking_data)
     booking.user_id = current_user.id
-    # booking.fare = fare
-    # booking.distance_km = distance_km
-    # booking.duration_minutes = duration_minutes
 
     session.add(booking)
     session.commit()
     session.refresh(booking)
-    session.refresh(booking, attribute_names=["user", "driver"])
+
+    # Create payment linked to this booking
+    crud.payment.create_payment(
+        session=session,
+        booking_id=booking.id,
+        amount=booking.fare,
+        method=booking_in.payment_method
+    )
+
+    session.refresh(booking, attribute_names=["user", "driver", "payment"])
     return _flatten(booking)
 
 
