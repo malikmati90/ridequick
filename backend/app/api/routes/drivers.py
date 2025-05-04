@@ -3,11 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import Any
 
 from app import crud
-from app.api.deps import (
-    CurrentUser,
-    SessionDep,
-    get_current_active_superuser,
-)
+from app.api.deps import SessionDep, get_current_active_superuser
+
 from app.models import (
     Message,
     DriverCreate,
@@ -18,7 +15,6 @@ from app.models import (
     AdminUpdateDriver,
     DriverFullOut
 )
-from app.utils import flatten_driver_data
 
 
 router = APIRouter()
@@ -43,7 +39,7 @@ def read_driver(driver_id: int, session: SessionDep) -> Any:
         raise HTTPException(status_code=404, detail="Driver not found")
     
     session.refresh(driver, attribute_names=["user"])  # ensure user is loaded
-    return flatten_driver_data(driver)
+    return crud.driver.flatten_driver_data(driver)
 
 
 # @router.post(
@@ -87,7 +83,8 @@ def create_user_and_driver(session: SessionDep, body: AdminCreateDriver) -> Any:
     dependencies=[Depends(get_current_active_superuser)],
     response_model=DriverFullOut
 )
-def admin_update_driver(driver_id: int,
+def admin_update_driver(
+    driver_id: int,
     body: AdminUpdateDriver,
     session: SessionDep
 ) -> DriverFullOut:
