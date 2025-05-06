@@ -104,3 +104,17 @@ class BookingFullOut(BookingBase):
 class BookingsOut(SQLModel):
     data: list[Union[BookingOut, BookingFullOut]]
     count: int
+
+
+class BookingEstimateRequest(SQLModel):
+    distance_km: float
+    duration_minutes: int
+    scheduled_time: datetime
+    passenger_count: int = Field(default=1, ge=1)
+    is_airport: bool = False
+    is_holiday: bool = False
+
+
+class BookingEstimateResponse(SQLModel):
+    category: VehicleCategory
+    estimated_fare: float

@@ -1,7 +1,10 @@
+from datetime import datetime
 from typing import List, Optional
 from sqlmodel import Session, select, func
 from fastapi import HTTPException
 
+from .payment import create_payment
+from app.utils.fare import estimate_fare
 from app.models import (
     Booking,
     BookingCreateMe,
@@ -9,6 +12,9 @@ from app.models import (
     BookingUpdate,
     BookingsOut,
     BookingFullOut,
+    BookingEstimateRequest,
+    BookingEstimateResponse,
+    PricingRule,
     User,
     Driver
 )
@@ -54,7 +60,7 @@ def create_booking_me(
     session.refresh(booking)
 
     # Create payment linked to this booking
-    crud.payment.create_payment(
+    create_payment(
         session=session,
         booking_id=booking.id,
         amount=booking.fare,
@@ -157,3 +163,27 @@ def update_booking(*, session: Session, db_booking: Booking, booking_in: Booking
 def delete_booking(*, session: Session, db_booking: Booking):
     session.delete(db_booking)
     session.commit()
+
+
+
+
+def estimate_booking_price(*, session: Session, body: BookingEstimateRequest) -> List[BookingEstimateResponse]:
+    rules = session.exec(select(PricingRule).where(PricingRule.is_active == True)).all()
+
+    estimates = []
+    for rule in rules:
+        price = estimate_fare(
+            rule=rule,
+            distance_km=body.distance_km,
+            duration_minutes=body.duration_minutes,
+            scheduled_time=body.scheduled_time,
+            passenger_count=body.passenger_count,
+            is_airport=body.is_airport,
+            is_holiday=body.is_holiday,
+        )
+        estimates.append(BookingEstimateResponse(
+            category=rule.category,
+            estimated_fare=price
+        ))
+
+    return estimates

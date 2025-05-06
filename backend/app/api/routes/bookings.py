@@ -15,6 +15,10 @@ from app.models import (
     BookingOut,
     BookingsOut,
     BookingFullOut,
+    BookingEstimateRequest,
+    BookingEstimateResponse,
+    PricingRule,
+    VehicleCategory,
     Message,
 )
 
@@ -147,3 +151,10 @@ def delete_booking(booking_id: int, session: SessionDep) -> Message:
         raise HTTPException(status_code=404, detail="Booking not found")
     crud.booking.delete_booking(session=session, db_booking=db_booking)
     return Message(message="Booking deleted successfully")
+
+@router.post("/estimate", response_model=list[BookingEstimateResponse])
+def estimate_booking_price(
+    session: SessionDep,
+    body: BookingEstimateRequest
+) -> list[BookingEstimateResponse]:
+    return crud.booking.estimate_booking_price(session=session, body=body)
