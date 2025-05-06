@@ -25,7 +25,6 @@ def _flatten(b: Booking) -> BookingFullOut:
     u = b.user
     d = b.driver
     p = b.payment
-    p = b.payment
     return BookingFullOut(
         pickup_location=b.pickup_location,
         dropoff_location=b.dropoff_location,
@@ -41,8 +40,6 @@ def _flatten(b: Booking) -> BookingFullOut:
         vehicle_category=b.vehicle_category,
         duration_minutes=b.duration_minutes,
         distance_km=(b.distance_km if b.distance_km else None),
-        payment_status=(p.status if p else None),
-        payment_method=(p.method if p else None),
         payment_status=(p.status if p else None),
         payment_method=(p.method if p else None),
         created_at=b.created_at,
@@ -132,7 +129,6 @@ def read_bookings_complete(*, session: Session, skip: int = 0, limit: int = 100)
     return BookingsOut(data=[_flatten(b) for b in rows], count=total)
 
 
-
 def read_bookings_by_user(*, session: Session, user_id: int) -> List[BookingFullOut]:
     rows = session.exec(select(Booking).where(Booking.user_id == user_id)).all()
     for b in rows:
@@ -168,8 +164,6 @@ def update_booking(*, session: Session, db_booking: Booking, booking_in: Booking
 def delete_booking(*, session: Session, db_booking: Booking):
     session.delete(db_booking)
     session.commit()
-
-
 
 
 def estimate_booking_price(*, session: Session, body: BookingEstimateRequest) -> List[BookingEstimateResponse]:
