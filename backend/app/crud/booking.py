@@ -25,6 +25,7 @@ def _flatten(b: Booking) -> BookingFullOut:
     u = b.user
     d = b.driver
     p = b.payment
+    p = b.payment
     return BookingFullOut(
         pickup_location=b.pickup_location,
         dropoff_location=b.dropoff_location,
@@ -42,6 +43,8 @@ def _flatten(b: Booking) -> BookingFullOut:
         distance_km=(b.distance_km if b.distance_km else None),
         payment_status=(p.status if p else None),
         payment_method=(p.method if p else None),
+        payment_status=(p.status if p else None),
+        payment_method=(p.method if p else None),
         created_at=b.created_at,
         updated_at=b.updated_at
     )
@@ -50,6 +53,8 @@ def _flatten(b: Booking) -> BookingFullOut:
 def create_booking_me(
     *, session: Session, booking_in: BookingCreateMe, current_user: User
 ) -> BookingFullOut:
+    
+    booking_data = booking_in.model_dump(exclude={"payment_method"})
     
     booking_data = booking_in.model_dump(exclude={"payment_method"})
     booking = Booking(**booking_data)
