@@ -1,5 +1,6 @@
 """ User models """
-from sqlmodel import SQLModel, Field
+from typing import List, Optional
+from sqlmodel import Relationship, SQLModel, Field
 from enum import Enum
 from pydantic import EmailStr
 
@@ -22,6 +23,10 @@ class User(UserBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     hashed_password: str
 
+    bookings: List["Booking"] = Relationship(back_populates="user")
+    driver_profile: Optional["Driver"] = Relationship(back_populates="user")
+
+
 # Properties to receive via API on creation
 class UserCreate(UserBase):
     password: str = Field(min_length=8, max_length=40)
@@ -38,14 +43,14 @@ class UserRegister(SQLModel):
 class UserUpdate(UserBase):
     email: EmailStr | None = None  # type: ignore
     full_name: str | None = None
-    phone_number: int | None = None
+    phone_number: str | None = None
     password: str | None = None
 
 
 class UserUpdateMe(SQLModel):
     email: EmailStr | None = None
     full_name: str | None = None
-    phone_number: int | None = None
+    phone_number: str | None = None
 
 class UpdatePassword(SQLModel):
     current_password: str
