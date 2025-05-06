@@ -11,6 +11,7 @@ import jwt
 from jwt.exceptions import InvalidTokenError
 from app.core.config import settings
 
+from app.models import Driver, DriverFullOut
 
 @dataclass
 class EmailData:
