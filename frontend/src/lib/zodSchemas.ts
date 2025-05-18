@@ -9,7 +9,7 @@ export const SignUpSchema = z.object({
   }),
   
   fullName: z.string()
-    .min(3, { message: "Full name must be at least 3 characters long." })
+    .min(3, { message: `Full name must be at least ${MIN_LENGTH} characters long.` })
     .max(MAX_LENGTH, { message: `Full name cannot exceed ${MAX_LENGTH} characters.` }),
   
   password: z.string()
@@ -25,3 +25,22 @@ export const SignUpSchema = z.object({
     .max(15, { message: "Phone number is too long." })
     .regex(/^\d+$/, { message: "Phone number should contain only digits." }),
   });
+
+
+export const formSchema = z.object({
+  pickupLocation: z.string().min(MIN_LENGTH, {
+    message: `Pickup location must be at least ${MIN_LENGTH} characters.`,
+  }),
+  destination: z.string().min(MIN_LENGTH, {
+    message: `Destination must be at least ${MIN_LENGTH} characters.`,
+  }),
+  date: z.date({
+    required_error: "Please select a date.",
+  }),
+  time: z.date({
+    required_error: "Please select a time.",
+  }),
+  passengers: z.string().min(1, {
+    message: "Please select number of passengers.",
+  }),
+})
