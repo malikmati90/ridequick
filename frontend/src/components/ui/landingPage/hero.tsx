@@ -25,7 +25,9 @@ export default function HeroSection() {
 
           {/* RIGHT: Booking Form */}
           <div className="flex justify-end">
-            <BookingForm />
+            <div className="max-w-md w-full">
+              <BookingForm />
+            </div>
           </div>
         </div>
       </div>

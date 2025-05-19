@@ -74,8 +74,8 @@ export default function BookingForm() {
                 <FormLabel>From</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <span className="absolute left-3 top-4 text-gray-500">
-                      <MapPinIcon className="h-4 w-4" />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                    <MapPinIcon className="h-4 w-4" />
                     </span>
                     <Input
                       placeholder="Address, airport, hotel, ..."
@@ -99,7 +99,7 @@ export default function BookingForm() {
                 <FormLabel>To</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <span className="absolute left-3 top-4 text-gray-500">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
                       <MapPinIcon className="h-4 w-4" />
                     </span>
                     <Input
@@ -144,7 +144,6 @@ export default function BookingForm() {
                         selected={field.value}
                         onSelect={field.onChange}
                         disabled={(date) => date < new Date()}
-                        initialFocus
                       />
                     </PopoverContent>
                   </Popover>
@@ -168,20 +167,17 @@ export default function BookingForm() {
                           ampm={false}
                           slotProps={{
                             textField: {
-                            fullWidth: true,
-                            size: "small", // Reduce default padding
-                            variant: "outlined",
-                            sx: {
-                              height: "40px", // Match Tailwind py-5 + border
-                              fontSize: "1rem",
-                              "& .MuiInputBase-input": {
-                              padding: "14px 12px", // Controls input height
+                              fullWidth: true,
+                              size: "small",
+                              variant: "outlined",
+                              InputProps: {
+                                sx: {
+                                  height: 47, // Add height
+                                },
                               },
-                            },
                             },
                           }}
                         />
-
                         )}
                     />
                     </LocalizationProvider>
