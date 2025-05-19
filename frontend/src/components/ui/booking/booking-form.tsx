@@ -22,6 +22,10 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import { ThemeProvider } from "@mui/material/styles"
 import { timePickerTheme } from "@/lib/mui-timepicker-theme"
 
+import { Autocomplete } from "@react-google-maps/api"
+import { useRef } from "react"
+import { AddressAutocomplete } from "./AddressAutoComplete"
+
 
 export default function BookingForm() {
   const router = useRouter()
@@ -60,6 +64,10 @@ export default function BookingForm() {
     setIsSubmitting(false)
   }
 
+  const pickupRef = useRef<google.maps.places.Autocomplete | null>(null)
+  const destinationRef = useRef<google.maps.places.Autocomplete | null>(null)
+
+
   return (
     <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 space-y-4 text-black">
       <Form {...form}>
@@ -77,12 +85,11 @@ export default function BookingForm() {
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
                     <MapPinIcon className="h-4 w-4" />
                     </span>
-                    <Input
-                      placeholder="Address, airport, hotel, ..."
+                    <AddressAutocomplete
                       {...field}
-                      className="pl-10 py-5 md:py-6 bg-gray-50 border-gray-200 focus:bg-white rounded-md text-base"
+                      placeholder="Address, airport, hotel, ..."
+                      className="pl-10 py-5 md:py-6 bg-gray-50 border-gray-200 focus:bg-white rounded-md text-base w-full"
                     />
-
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -102,11 +109,11 @@ export default function BookingForm() {
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
                       <MapPinIcon className="h-4 w-4" />
                     </span>
-                    <Input
-                      placeholder="Address, airport, hotel, ..."
+                    <AddressAutocomplete
                       {...field}
-                      className="pl-10 py-5 md:py-6 bg-gray-50 border-gray-200 focus:bg-white rounded-md text-base"
-                      />
+                      placeholder="Address, airport, hotel, ..."
+                      className="pl-10 py-5 md:py-6 bg-gray-50 border-gray-200 focus:bg-white rounded-md text-base w-full"
+                    />
                   </div>
                 </FormControl>
                 <FormMessage />

@@ -1,4 +1,4 @@
-import BookingForm from "../booking/booking-form"
+import BookingFormWrapper from "../booking/booking-form-wrapper"
 
 export default function HeroSection() {
   return (
@@ -26,9 +26,10 @@ export default function HeroSection() {
           {/* RIGHT: Booking Form */}
           <div className="flex justify-end">
             <div className="max-w-md w-full">
-              <BookingForm />
+              <BookingFormWrapper />
             </div>
           </div>
+          
         </div>
       </div>
     </section>
