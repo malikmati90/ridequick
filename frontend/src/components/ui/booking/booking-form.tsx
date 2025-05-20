@@ -64,9 +64,6 @@ export default function BookingForm() {
     setIsSubmitting(false)
   }
 
-  const pickupRef = useRef<google.maps.places.Autocomplete | null>(null)
-  const destinationRef = useRef<google.maps.places.Autocomplete | null>(null)
-
 
   return (
     <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 space-y-4 text-black">
@@ -86,6 +83,7 @@ export default function BookingForm() {
                     <MapPinIcon className="h-4 w-4" />
                     </span>
                     <AddressAutocomplete
+                    
                       {...field}
                       placeholder="Address, airport, hotel, ..."
                       className="pl-10 py-5 md:py-6 bg-gray-50 border-gray-200 focus:bg-white rounded-md text-base w-full"
