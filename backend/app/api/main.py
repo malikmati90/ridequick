@@ -10,7 +10,8 @@ from app.api.routes import (
     drivers,
     vehicles,
     bookings,
-    pricing
+    pricing,
+    directions,
 )
 
 api_router = APIRouter()
@@ -28,3 +29,4 @@ api_router.include_router(
     dependencies=[Depends(get_current_active_superuser)] # Admin access only
 )
 
+api_router.include_router(directions.router, prefix="/api")

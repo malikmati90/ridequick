@@ -32,7 +32,7 @@ if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    generate_unique_id_function=custom_generate_unique_id,
+    #generate_unique_id_function=custom_generate_unique_id,
 )
 
 # Set all CORS enabled origins

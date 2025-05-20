@@ -28,12 +28,22 @@ export const SignUpSchema = z.object({
 
 
 export const formSchema = z.object({
-  pickupLocation: z.string().min(MIN_LENGTH, {
-    message: "Please select a correct location",
+  pickupLocation: z.object({
+    formattedAddress: z.string().min(1),
+    name: z.string().min(1),
+    lat: z.number(),
+    lng: z.number(),
+    types: z.array(z.string()).optional(),
   }),
-  destination: z.string().min(MIN_LENGTH, {
-    message: "Please select a correct location",
+
+  destination: z.object({
+    formattedAddress: z.string().min(1),
+    name: z.string().min(1),
+    lat: z.number(),
+    lng: z.number(),
+    types: z.array(z.string()).optional(),
   }),
+
   date: z.date({
     required_error: "Please select a date.",
   }),

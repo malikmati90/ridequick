@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { formSchema } from "@/lib/zodSchemas"
 import { Controller } from "react-hook-form"
@@ -22,9 +21,10 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import { ThemeProvider } from "@mui/material/styles"
 import { timePickerTheme } from "@/lib/mui-timepicker-theme"
 
-import { Autocomplete } from "@react-google-maps/api"
-import { useRef } from "react"
 import { AddressAutocomplete } from "./AddressAutoComplete"
+import { estimateFare } from "@/lib/booking/estimateFare"
+import { combineDateAndTime, detectIsAirport, detectIsHoliday } from "@/lib/booking/helpers"
+
 
 
 export default function BookingForm() {
@@ -41,8 +41,20 @@ export default function BookingForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      pickupLocation: "",
-      destination: "",
+      pickupLocation: { 
+        formattedAddress: "",
+        name: "",
+        lat: 0,
+        lng: 0,
+        types: [], 
+      },
+      destination: { 
+        formattedAddress: "",
+        name: "",
+        lat: 0,
+        lng: 0,
+        types: [], 
+      },
       passengers: passengers.toString(),
       date: addDays(new Date(), 1), // default to tomorrow
       time: defaultTime(),
@@ -59,9 +71,36 @@ export default function BookingForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
-    console.log("Submitted values:", values)
-    router.push("/booking") // simulate redirect
-    setIsSubmitting(false)
+
+    try {
+      const fareEstimates = await estimateFare({
+        pickupLocation: values.pickupLocation.formattedAddress,
+        destination: values.destination.formattedAddress,
+        passengers: parseInt(values.passengers),
+        scheduledTime: combineDateAndTime(values.date, values.time),
+        isAirport: detectIsAirport(values.pickupLocation.name, values.destination.name),
+        isHoliday: detectIsHoliday(values.date),
+      })
+      // just for now testing
+      alert(
+        fareEstimates
+          .map(
+            (estimate) =>
+              `${estimate.category}: €${estimate.estimated_fare.toFixed(2)}`
+          )
+          .join("\n")
+      )
+      
+    
+    } catch (error) {
+      console.error("Fare estimation failed:", error)
+      alert("Failed to estimate fare. Please try again.")
+    
+    } finally {
+      setIsSubmitting(false)
+      console.log("Submitted values:", values)
+      //router.push("/booking") // simulate redirect
+    }
   }
 
 

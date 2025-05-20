@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Input } from '../input'
+import { PlaceResult } from '../../../../types/maps'
 
 type Props = {
-  value: string
-  onChange: (value: string) => void
+  value: PlaceResult
+  onChange: (value: PlaceResult) => void
   placeholder?: string
   className?: string
   countryCode?: string 
@@ -21,14 +22,14 @@ export function AddressAutocomplete({
   const inputRef = useRef<HTMLInputElement>(null)
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
   const [sessionToken, setSessionToken] = useState<google.maps.places.AutocompleteSessionToken | null>(null)
-  const [localValue, setLocalValue] = useState(value)
+  const [localValue, setLocalValue] = useState(value.formattedAddress)
   const debounceRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Sync with external value (e.g. RHF reset)
   useEffect(() => {
-    setLocalValue(value)
-  }, [value])
-
+    const namePart = value.name ? value.name + " – " : ""
+    setLocalValue(namePart + value.formattedAddress)
+  }, [value.name, value.formattedAddress])
+  
 
   useEffect(() => {
     if (!window.google || !inputRef.current) return
@@ -39,19 +40,32 @@ export function AddressAutocomplete({
 
     autocompleteRef.current = new google.maps.places.Autocomplete(inputRef.current, {
       componentRestrictions: { country: countryCode }, // restrict to only show results for Spain
-      fields: ['formatted_address', 'geometry', 'place_id', 'name'], // restrict fields to optimize additional costs
+      fields: ['formatted_address', 'geometry', 'name', 'types'], // restrict fields to optimize additional costs
     })
 
     const listener = autocompleteRef.current.addListener('place_changed', () => {
       const place = autocompleteRef.current?.getPlace()
-      const address = place?.formatted_address ?? inputRef.current?.value
-      if (address) {
-        onChange(address)
-        setSessionToken(new google.maps.places.AutocompleteSessionToken()) // reset the token after being used
-      }
-    })
 
-    setLocalValue(value) // Sync with RHF on reset
+      if (!place || !place.geometry || !place.geometry.location) return
+
+      const formattedAddress = place?.formatted_address ?? ""
+      const name = place.name ?? ""
+      const lat = place.geometry.location.lat()
+      const lng = place.geometry.location.lng()
+      const types = place.types ?? []
+      
+      const structured: PlaceResult = {
+        formattedAddress,
+        name,
+        lat,
+        lng,
+        types,
+      }
+
+      console.log("Selected place:", structured) //  Log full place data
+      onChange(structured)
+      setSessionToken(new google.maps.places.AutocompleteSessionToken()) // reset the token after being used
+    })
 
     return () => {
       google.maps.event.removeListener(listener)
@@ -67,10 +81,10 @@ export function AddressAutocomplete({
         const newVal = e.target.value
         setLocalValue(newVal)
 
-        if (debounceRef.current) clearTimeout(debounceRef.current)
-        debounceRef.current = setTimeout(() => {
-          onChange(newVal)
-        }, 300)
+        // if (debounceRef.current) clearTimeout(debounceRef.current)
+        // debounceRef.current = setTimeout(() => {
+        //   onChange(newVal)
+        // }, 300)
       }}
       placeholder={placeholder}
       className={className}
