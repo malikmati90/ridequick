@@ -1,3 +1,5 @@
+import { LucideIcon, MapPinIcon } from "lucide-react"
+import { placeTypeIcons } from "../../../types/maps"
 
 // Combine date and time
 export function combineDateAndTime(date: Date, time: Date): Date {
@@ -37,3 +39,23 @@ export function detectIsHoliday(date: Date): boolean {
     const formatted = date.toISOString().split("T")[0]
     return barcelonaHolidays.includes(formatted)
 }
+
+
+export function getPlaceIcon(types: string[], name: string): LucideIcon {
+    const lowerName = name.toLowerCase()
+  
+    if (types.includes("airport") || lowerName.includes("airport")) {
+      return placeTypeIcons.airport
+    }
+  
+    if (
+      types.includes("lodging") ||
+      types.includes("hotel") ||
+      lowerName.includes("hotel")
+    ) {
+      return placeTypeIcons.hotel
+    }
+  
+    return MapPinIcon // default
+  }
+  

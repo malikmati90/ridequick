@@ -3,6 +3,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Input } from '../input'
 import { PlaceResult } from '../../../../types/maps'
+import { getPlaceIcon } from '@/lib/booking/helpers'
+import  { LucideIcon, MapPinIcon } from "lucide-react"
+import { Icon } from '@radix-ui/react-select'
+
 
 type Props = {
   value: PlaceResult
@@ -72,23 +76,39 @@ export function AddressAutocomplete({
     }
   }, [countryCode])
 
-  return (
-    <Input
-      ref={inputRef}
-      type="text"
-      value={localValue}
-      onChange={(e) => {
-        const newVal = e.target.value
-        setLocalValue(newVal)
+  const IconComponent = getPlaceIcon(value.types ?? [], value.name ?? "")
 
-        // if (debounceRef.current) clearTimeout(debounceRef.current)
-        // debounceRef.current = setTimeout(() => {
-        //   onChange(newVal)
-        // }, 300)
-      }}
-      placeholder={placeholder}
-      className={className}
-    />
+  return (
+    <div className="relative">
+      {/* Icon inside input on the left */}
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+      {typeof IconComponent === "string" ? (
+        <span>{IconComponent}</span>
+      ) : IconComponent ? (
+        <IconComponent className="w-4 h-4" />
+      ) : (
+        <MapPinIcon className="w-4 h-4" />
+      )}
+    </span>
+
+      
+      <Input
+        ref={inputRef}
+        type="text"
+        value={localValue}
+        onChange={(e) => {
+          const newVal = e.target.value
+          setLocalValue(newVal)
+
+          // if (debounceRef.current) clearTimeout(debounceRef.current)
+          // debounceRef.current = setTimeout(() => {
+          //   onChange(newVal)
+          // }, 300)
+        }}
+        placeholder={placeholder}
+        className={className}
+      />
+    </div>
 
   )
 }
