@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Input } from '../input'
-import { PlaceResult } from '../../../../types/maps'
+import { Input } from '../ui/input'
+import { PlaceResult } from '../../../types/maps'
 import { getPlaceIcon } from '@/lib/booking/helpers'
 import  { LucideIcon, MapPinIcon } from "lucide-react"
 import { Icon } from '@radix-ui/react-select'

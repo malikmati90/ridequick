@@ -136,16 +136,11 @@ export default function BookingForm() {
               <FormItem>
                 <FormLabel>To</FormLabel>
                 <FormControl>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                      <MapPinIcon className="h-4 w-4" />
-                    </span>
-                    <AddressAutocomplete
-                      {...field}
-                      placeholder="Address, airport, hotel, ..."
-                      className="pl-10 py-5 md:py-6 bg-gray-50 border-gray-200 focus:bg-white rounded-md text-base w-full"
-                    />
-                  </div>
+                  <AddressAutocomplete
+                    {...field}
+                    placeholder="Address, airport, hotel, ..."
+                    className="pl-10 py-5 md:py-6 bg-gray-50 border-gray-200 focus:bg-white rounded-md text-base w-full"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
