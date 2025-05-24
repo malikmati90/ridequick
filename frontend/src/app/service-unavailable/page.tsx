@@ -13,7 +13,7 @@ export default function ServiceUnavailablePage() {
           Service Unavailable
         </h1>
         <p className="text-gray-600 text-base mb-6">
-          We're currently experiencing technical issues. Our booking system is temporarily unavailable.
+          We&apos;re currently experiencing technical issues. Our booking system is temporarily unavailable.
           <br />
           Please try again in a few minutes.
         </p>

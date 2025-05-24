@@ -52,12 +52,12 @@ export interface BookingState {
 export const vehicleOptions: Record<string, VehicleOption> = {
   economy: {
     name: "Economy",
-    features: ["Budget-friendly option", "Standard sedan", "Up to 4 passengers"],
+    features: ["Budget-friendly option", "Standard sedan"],
     image: "/placeholder.svg?height=100&width=200",
   },
   standard: {
     name: "Standard",
-    features: ["Comfortable ride", "Mid-size vehicle", "Up to 4 passengers", "Air conditioning"],
+    features: ["Comfortable ride", "Mid-size vehicle", "Air conditioning"],
     image: "/placeholder.svg?height=100&width=200",
   },
   premium: {
@@ -65,7 +65,6 @@ export const vehicleOptions: Record<string, VehicleOption> = {
     features: [
       "Luxury experience",
       "High-end vehicle",
-      "Up to 4 passengers",
       "Air conditioning",
       "Free Wi-Fi",
       "Bottled water",
@@ -74,8 +73,6 @@ export const vehicleOptions: Record<string, VehicleOption> = {
   },
 //   van: {
 //     name: "Van",
-//     basePrice: 30,
-//     pricePerKm: 2.2,
 //     features: ["Spacious vehicle", "Up to 8 passengers", "Ideal for groups", "Luggage space"],
 //     image: "/placeholder.svg?height=100&width=200",
 //   },

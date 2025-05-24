@@ -43,8 +43,8 @@ export default function BookingForm() {
       pickupLocation: pickupLocation || undefined,
       destination: destination || undefined,
       passengers: passengers || numPassengers,
-      date: date || addDays(new Date(), 1), // default to tomorrow
-      time: time || defaultTime(),
+      date: addDays(new Date(), 1), // default to tomorrow
+      time: defaultTime(),
     },
   })
 
@@ -224,7 +224,7 @@ export default function BookingForm() {
               {/* Left: Icon and value */}
               <div className="flex items-center gap-2 text-gray-700">
                 <Users className="h-4 w-4 text-gray-500" />
-                <span className="font-medium text-base">{passengers}</span>
+                <span className="font-medium text-base">{numPassengers}</span>
               </div>
 
               {/* Right: + and - buttons */}
