@@ -3,10 +3,10 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, useFormContext, useWatch } from "react-hook-form"
 import { z } from "zod"
 import { format, addDays } from "date-fns"
-import { CalendarIcon, MapPinIcon, Users, Search } from "lucide-react"
+import { CalendarIcon, Users, Search } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -14,27 +14,22 @@ import { Calendar } from "@/components/ui/calendar"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { formSchema } from "@/lib/zodSchemas"
-import { Controller } from "react-hook-form"
-import { TimePicker } from "@mui/x-date-pickers/TimePicker"
-import { LocalizationProvider } from "@mui/x-date-pickers"
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
-import { ThemeProvider } from "@mui/material/styles"
-import { timePickerTheme } from "@/lib/mui-timepicker-theme"
+import { TimePicker } from "./time-picker"
 
 import { AddressAutocomplete } from "./AddressAutoComplete"
 import { estimateFare } from "@/lib/booking/estimateFare"
 import { combineDateAndTime, detectIsAirport, detectIsHoliday } from "@/lib/booking/helpers"
 
 
-
 export default function BookingForm() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [passengers, setPassengers] = useState(2)
+  const now = new Date();
 
   const defaultTime = () => {
-    const now = new Date()
-    now.setHours(14, 0, 0, 0)
+    const t = new Date();
+    t.setHours(14, 0, 0, 0)
     return now
   }
   
@@ -61,6 +56,20 @@ export default function BookingForm() {
     },
   })
 
+  const selectedDate = useWatch({
+    control: form.control,
+    name: "date",
+  });  
+
+  const isToday = selectedDate
+    ? new Date(selectedDate).toDateString() === now.toDateString()
+    : false;
+  
+  const dynamicHourRange = isToday
+    ? { start: now.getHours() + 1, end: 23 }
+    : { start: 0, end: 23 };
+
+
   const handlePassengerChange = (delta: number) => {
     setPassengers((prev) => {
       const newCount = Math.min(Math.max(prev + delta, 1), 50)
@@ -81,15 +90,17 @@ export default function BookingForm() {
         isAirport: detectIsAirport(values.pickupLocation.name, values.destination.name),
         isHoliday: detectIsHoliday(values.date),
       })
+
+      console.log(fareEstimates)
       // just for now testing
-      alert(
-        fareEstimates
-          .map(
-            (estimate) =>
-              `${estimate.category}: €${estimate.estimated_fare.toFixed(2)}`
-          )
-          .join("\n")
-      )
+      // alert(
+      //   fareEstimates
+      //     .map(
+      //       (estimate) =>
+      //         `${estimate.category}: €${estimate.estimated_fare.toFixed(2)}`
+      //     )
+      //     .join("\n")
+      // )
       
     
     } catch (error) {
@@ -99,7 +110,7 @@ export default function BookingForm() {
     } finally {
       setIsSubmitting(false)
       console.log("Submitted values:", values)
-      //router.push("/booking") // simulate redirect
+      router.push("/booking") // simulate redirect
     }
   }
 
@@ -120,7 +131,7 @@ export default function BookingForm() {
                   <AddressAutocomplete
                     {...field}
                     placeholder="Address, airport, hotel, ..."
-                    className="pl-10 py-5 md:py-6 bg-gray-50 border-gray-200 focus:bg-white rounded-md text-base w-full"
+                    className="pl-10 py-5 md:py-5 bg-gray-50 border-gray-200 focus:bg-white rounded-md text-base w-full"
                   />
                 </FormControl>
                 <FormMessage />
@@ -139,7 +150,7 @@ export default function BookingForm() {
                   <AddressAutocomplete
                     {...field}
                     placeholder="Address, airport, hotel, ..."
-                    className="pl-10 py-5 md:py-6 bg-gray-50 border-gray-200 focus:bg-white rounded-md text-base w-full"
+                    className="pl-10 py-5 md:py-5 bg-gray-50 border-gray-200 focus:bg-white rounded-md text-base w-full"
                   />
                 </FormControl>
                 <FormMessage />
@@ -155,18 +166,18 @@ export default function BookingForm() {
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Pickup date</FormLabel>
+                  <FormLabel>Pickup Date</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
                           variant="outline"
                           className={cn(
-                            "pl-3 py-5 md:py-6 text-left font-normal bg-gray-50 border-gray-200 hover:bg-gray-100",
+                            "pl-3 py-4 md:py-5 text-left font-normal bg-gray-50 border-gray-200 hover:bg-gray-100",
                             !field.value && "text-muted-foreground"
                           )}
                         >
-                          {field.value ? format(field.value, "EEE, dd MMM, yyyy") : <span>Select date</span>}
+                          {field.value ? format(field.value, "dd MMM, yyyy") : <span>Select date</span>}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
@@ -176,7 +187,7 @@ export default function BookingForm() {
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
-                        disabled={(date) => date < new Date()}
+                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                       />
                     </PopoverContent>
                   </Popover>
@@ -186,38 +197,31 @@ export default function BookingForm() {
             />
 
             {/* Time */}
-            <FormItem>
-              <FormLabel>Pickup Time</FormLabel>
-                <ThemeProvider theme={timePickerTheme}>
-                  <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <Controller
-                      control={form.control}
-                      name="time"
-                      render={({ field }) => (
-                        <TimePicker
-                          value={field.value}
-                          onChange={field.onChange}
-                          ampm={false}
-                          slotProps={{
-                            textField: {
-                              fullWidth: true,
-                              size: "small",
-                              variant: "outlined",
-                              InputProps: {
-                                sx: {
-                                  height: 47, // Add height
-                                },
-                              },
-                            },
-                          }}
-                        />
-                        )}
+            <FormField
+              control={form.control}
+              name="time"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Pickup Time</FormLabel>
+                  <FormControl>
+                    <TimePicker
+                      date={field.value}
+                      setDate={(date) => field.onChange(date)}
+                      minuteInterval={5}
+                      defaultTimeFormat="24h"
+                      hourRange={dynamicHourRange}
+                      styles={{
+                        selectedBg: "bg-black",
+                        selectedText: "text-white",
+                        saveButtonBg: "bg-black",
+                        saveButtonText: "text-white",
+                      }}
                     />
-                    </LocalizationProvider>
-                  </ThemeProvider>
-                <FormMessage />
-            </FormItem>
-
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           {/* Passengers */}
