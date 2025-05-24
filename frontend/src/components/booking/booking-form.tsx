@@ -19,40 +19,32 @@ import { TimePicker } from "./time-picker"
 import { AddressAutocomplete } from "./AddressAutoComplete"
 import { estimateFare } from "@/lib/booking/estimateFare"
 import { combineDateAndTime, detectIsAirport, detectIsHoliday } from "@/lib/booking/helpers"
+import { useBookingStore } from "@/lib/store"
 
 
 export default function BookingForm() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [passengers, setPassengers] = useState(2)
+  const [numPassengers, setNumPassengers] = useState(2)
   const now = new Date();
 
   const defaultTime = () => {
     const t = new Date();
     t.setHours(14, 0, 0, 0)
-    return now
+    return t
   }
   
+  // Get state and actions from our store
+  const { pickupLocation, destination, date, time, passengers, setBookingDetails } = useBookingStore()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      pickupLocation: { 
-        formattedAddress: "",
-        name: "",
-        lat: 0,
-        lng: 0,
-        types: [], 
-      },
-      destination: { 
-        formattedAddress: "",
-        name: "",
-        lat: 0,
-        lng: 0,
-        types: [], 
-      },
-      passengers: passengers.toString(),
-      date: addDays(new Date(), 1), // default to tomorrow
-      time: defaultTime(),
+      pickupLocation: pickupLocation || undefined,
+      destination: destination || undefined,
+      passengers: passengers || numPassengers,
+      date: date || addDays(new Date(), 1), // default to tomorrow
+      time: time || defaultTime(),
     },
   })
 
@@ -71,9 +63,9 @@ export default function BookingForm() {
 
 
   const handlePassengerChange = (delta: number) => {
-    setPassengers((prev) => {
+    setNumPassengers((prev) => {
       const newCount = Math.min(Math.max(prev + delta, 1), 50)
-      form.setValue("passengers", newCount.toString())
+      form.setValue("passengers", newCount)
       return newCount
     })
   }
@@ -85,32 +77,33 @@ export default function BookingForm() {
       const fareEstimates = await estimateFare({
         pickupLocation: values.pickupLocation.formattedAddress,
         destination: values.destination.formattedAddress,
-        passengers: parseInt(values.passengers),
+        passengers: values.passengers,
         scheduledTime: combineDateAndTime(values.date, values.time),
         isAirport: detectIsAirport(values.pickupLocation.name, values.destination.name),
         isHoliday: detectIsHoliday(values.date),
       })
 
-      console.log(fareEstimates)
-      // just for now testing
-      // alert(
-      //   fareEstimates
-      //     .map(
-      //       (estimate) =>
-      //         `${estimate.category}: €${estimate.estimated_fare.toFixed(2)}`
-      //     )
-      //     .join("\n")
-      // )
-      
+      if (!fareEstimates || fareEstimates.length === 0) {
+        throw new Error("No fare estimates found.")
+      }
+        
+      // Update the store with form values
+      setBookingDetails({
+        pickupLocation: values.pickupLocation,
+        destination: values.destination,
+        date: values.date,
+        time: values.time,
+        passengers: values.passengers,
+        fareEstimates: fareEstimates
+      })
+
+      router.push("/booking")
     
     } catch (error) {
-      console.error("Fare estimation failed:", error)
-      alert("Failed to estimate fare. Please try again.")
+      router.push("/service-unavailable")
     
     } finally {
       setIsSubmitting(false)
-      console.log("Submitted values:", values)
-      router.push("/booking") // simulate redirect
     }
   }
 

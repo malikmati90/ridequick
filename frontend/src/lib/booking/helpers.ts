@@ -44,7 +44,12 @@ export function detectIsHoliday(date: Date): boolean {
 export function getPlaceIcon(types: string[], name: string): LucideIcon {
     const lowerName = name.toLowerCase()
   
-    if (types.includes("airport") || lowerName.includes("airport")) {
+    if (
+      types.includes("airport") || 
+      types.includes("aeropuerto") || 
+      lowerName.includes("airport") ||
+      lowerName.includes("aeropuerto")
+    ) {
       return placeTypeIcons.airport
     }
   

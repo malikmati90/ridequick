@@ -50,5 +50,7 @@ export async function estimateFare({
     }
   
     const fareEstimates: BookingEstimateResponse[] = await estimateRes.json()
+    console.log(fareEstimates)
+
     return fareEstimates
   }

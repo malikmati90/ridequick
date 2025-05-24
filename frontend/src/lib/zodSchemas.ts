@@ -27,30 +27,28 @@ export const SignUpSchema = z.object({
   });
 
 
-export const formSchema = z.object({
-  pickupLocation: z.object({
-    formattedAddress: z.string().min(1),
-    name: z.string().min(1),
+  export const placeSchema = z.object({
+    formattedAddress: z.string().min(1, "Invalid address"),
+    name: z.string().min(1, "Invalid place name"),
     lat: z.number(),
     lng: z.number(),
     types: z.array(z.string()).optional(),
-  }),
-
-  destination: z.object({
-    formattedAddress: z.string().min(1),
-    name: z.string().min(1),
-    lat: z.number(),
-    lng: z.number(),
-    types: z.array(z.string()).optional(),
-  }),
-
-  date: z.date({
-    required_error: "Please select a date.",
-  }),
-  time: z.date({
-    required_error: "Please select a time.",
-  }),
-  passengers: z.string().min(1, {
-    message: "Please select number of passengers.",
-  }),
-})
+  }).strict()
+  
+  export const formSchema = z.object({
+    pickupLocation: placeSchema,
+    destination: placeSchema,
+  
+    date: z.date({
+      required_error: "Please select a date.",
+    }),
+  
+    time: z.date({
+      required_error: "Please select a time.",
+    }),
+  
+    passengers: z.coerce.number().min(1, {
+      message: "Please select number of passengers.",
+    }),
+  })
+  

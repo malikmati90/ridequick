@@ -26,13 +26,17 @@ export function AddressAutocomplete({
   const inputRef = useRef<HTMLInputElement>(null)
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
   const [sessionToken, setSessionToken] = useState<google.maps.places.AutocompleteSessionToken | null>(null)
-  const [localValue, setLocalValue] = useState(value.formattedAddress)
+  const [localValue, setLocalValue] = useState(
+    value?.name ? `${value.name} – ${value.formattedAddress}` : ""
+  )
   const debounceRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
+    if (!value) return // avoid undefined errors
+
     const namePart = value.name ? value.name + " – " : ""
     setLocalValue(namePart + value.formattedAddress)
-  }, [value.name, value.formattedAddress])
+  }, [value])
   
 
   useEffect(() => {
@@ -76,7 +80,7 @@ export function AddressAutocomplete({
     }
   }, [countryCode])
 
-  const IconComponent = getPlaceIcon(value.types ?? [], value.name ?? "")
+  const IconComponent = getPlaceIcon(value?.types ?? [], value?.name ?? "")
 
   return (
     <div className="relative">
