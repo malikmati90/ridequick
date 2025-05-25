@@ -1,3 +1,4 @@
+from pydantic import BaseModel
 from sqlalchemy import Column, DateTime
 from sqlmodel import SQLModel, Field, Relationship
 from enum import Enum
@@ -38,3 +39,14 @@ class Payment(SQLModel, table=True):
     )
 
     booking: "Booking" = Relationship(back_populates="payment")
+
+
+class CheckoutRequest(BaseModel):
+    name: str
+    email: str
+    phone: str
+    price: float
+    selected_vehicle: str
+    pickup_location: str
+    destination: str
+    scheduled_time: str

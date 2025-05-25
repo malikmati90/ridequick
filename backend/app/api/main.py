@@ -12,6 +12,7 @@ from app.api.routes import (
     bookings,
     pricing,
     directions,
+    payments
 )
 
 api_router = APIRouter()
@@ -30,3 +31,4 @@ api_router.include_router(
 )
 
 api_router.include_router(directions.router, prefix="/api")
+api_router.include_router(payments.router, prefix="/payments")
