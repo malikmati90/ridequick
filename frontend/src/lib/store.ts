@@ -53,12 +53,12 @@ export const vehicleOptions: Record<string, VehicleOption> = {
   economy: {
     name: "Economy",
     features: ["Budget-friendly option", "Standard sedan"],
-    image: "/placeholder.svg?height=100&width=200",
+    image: "/sedan.png?height=100&width=200",
   },
   standard: {
     name: "Standard",
     features: ["Comfortable ride", "Mid-size vehicle", "Air conditioning"],
-    image: "/placeholder.svg?height=100&width=200",
+    image: "/van.png?height=100&width=200",
   },
   premium: {
     name: "Premium",

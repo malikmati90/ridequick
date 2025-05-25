@@ -4,10 +4,11 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import ProgressSteps from "@/components/ui/progress-steps"
 import { AnimatePresence, motion } from "framer-motion"
-import { CarTaxiFrontIcon as TaxiIcon } from "lucide-react"
 import { useBookingStore } from "@/lib/store"
 import CategoryStep from "./steps/CategoryStep"
 import ContactDetailsStep from "./steps/ContactDetailsStep"
+import PaymentStep from "./steps/PaymentStep"
+import SuccessStep from "./steps/SuccessStep"
 
 // Steps in the booking process
 const STEPS = {
