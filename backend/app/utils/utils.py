@@ -11,7 +11,6 @@ import jwt
 from jwt.exceptions import InvalidTokenError
 from app.core.config import settings
 
-from app.models import Driver, DriverFullOut
 
 @dataclass
 class EmailData:
@@ -20,9 +19,9 @@ class EmailData:
 
 
 def render_email_template(*, template_name: str, context: dict[str, Any]) -> str:
-    template_str = (
-        Path(__file__).parent / "email-templates" / "build" / template_name
-    ).read_text()
+    base_dir = Path(__file__).resolve().parent.parent  # This goes from utils.py up to app/
+    template_path = base_dir / "email-templates" / "build" / template_name
+    template_str = template_path.read_text()
     html_content = Template(template_str).render(context)
     return html_content
 
@@ -92,6 +91,25 @@ def generate_new_account_email(
             "password": password,
             "email": email_to,
             "link": settings.server_host,
+        },
+    )
+    return EmailData(html_content=html_content, subject=subject)
+
+
+def generate_booking_confirmation_email(data: dict[str, str]) -> EmailData:
+    subject = f"{settings.PROJECT_NAME} - Booking Confirmed"
+    html_content = render_email_template(
+        template_name="booking_confirmation.html",
+        context={
+            "project_name": settings.PROJECT_NAME,
+            "frontend_host": settings.FRONTEND_HOST,
+            "booking_id": data["booking_id"],
+            "pickup": data["pickup"],
+            "destination": data["destination"],
+            "date": data["date"].strftime("%d %B %Y"),
+            "time": data["time"].strftime("%H:%M"),
+            "vehicle": data["vehicle"],
+            "fare": data["fare"],
         },
     )
     return EmailData(html_content=html_content, subject=subject)
