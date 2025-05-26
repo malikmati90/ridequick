@@ -42,6 +42,8 @@ export interface BookingState {
   bookingId: string
   isBookingComplete: boolean
 
+  hasHydrated: boolean
+
   // Actions
   setBookingDetails: (details: Partial<BookingState>) => void
   resetBooking: () => void
@@ -53,12 +55,12 @@ export const vehicleOptions: Record<string, VehicleOption> = {
   economy: {
     name: "Economy",
     features: ["Budget-friendly option", "Standard sedan"],
-    image: "/sedan.png?height=100&width=200",
+    image: "/sedan.png?",
   },
   standard: {
     name: "Standard",
     features: ["Comfortable ride", "Mid-size vehicle", "Air conditioning"],
-    image: "/van.png?height=100&width=200",
+    image: "/van.png?",
   },
   premium: {
     name: "Premium",
@@ -69,7 +71,7 @@ export const vehicleOptions: Record<string, VehicleOption> = {
       "Free Wi-Fi",
       "Bottled water",
     ],
-    image: "/placeholder.svg?height=100&width=200",
+    image: "/placeholder.svg?",
   },
 //   van: {
 //     name: "Van",
@@ -111,6 +113,7 @@ export const useBookingStore = create<BookingState>()(
 
       bookingId: "",
       isBookingComplete: false,
+      hasHydrated: false,
 
       // Actions
       setBookingDetails: (details) =>
@@ -144,6 +147,7 @@ export const useBookingStore = create<BookingState>()(
           },
           bookingId: "",
           isBookingComplete: false,
+          hasHydrated: false,
         })),
 
       completeBooking: () =>
@@ -155,6 +159,9 @@ export const useBookingStore = create<BookingState>()(
     }),
     {
       name: "taxi-booking-storage",
+      onRehydrateStorage: () => (state) => {
+        state?.setBookingDetails?.({ hasHydrated: true })
+      },
     },
   ),
 )

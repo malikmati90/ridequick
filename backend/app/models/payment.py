@@ -47,6 +47,7 @@ class CheckoutRequest(BaseModel):
     phone: str
     price: float
     selected_vehicle: str
+    passengers: int
     pickup_location: str
     destination: str
     scheduled_time: str

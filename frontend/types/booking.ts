@@ -20,4 +20,15 @@ export type BookingEstimateResponse = {
     category: VehicleCategory
     estimated_fare: number
 }; 
-  
+
+export type CreateSessionParams = {
+    name: string
+    email: string
+    phone: string
+    price: number
+    selected_vehicle: string
+    passengers: number
+    pickup_location: string | undefined
+    destination: string | undefined
+    scheduled_time: string
+  }

@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useBookingStore, vehicleOptions } from "@/lib/store"
+import Image from "next/image"
 
 interface CategoryStepProps {
   onBack: () => void
@@ -63,9 +64,11 @@ export default function CategoryStep({ onBack, onComplete }: CategoryStepProps) 
             <CardContent className="pb-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="col-span-1">
-                  <img
+                  <Image
                     src={vehicle?.image ?? "/placeholder.svg"}
                     alt={vehicle?.name ?? type}
+                    height={100}
+                    width={200}
                     className="rounded-md w-full h-auto"
                   />
                 </div>

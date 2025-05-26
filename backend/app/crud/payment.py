@@ -49,7 +49,9 @@ def create_checkout_session(*, data: CheckoutRequest):
                     "unit_amount": int(data.price * 100),  # Stripe uses cents
                     "product_data": {
                         "name": f"{data.selected_vehicle.capitalize()} Taxi Ride",
-                        "description": f"From {data.pickup_location} to {data.destination}",
+                        "description": f"""From: {data.pickup_location}
+                                        To: {data.destination}
+                                        Number of Passengers: {data.passengers}""",
                     },
                 },
                 "quantity": 1,

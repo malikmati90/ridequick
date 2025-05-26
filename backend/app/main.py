@@ -15,7 +15,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("app.log", maxBytes=1_000_000, backupCount=5),
+        logging.FileHandler("app.log"),
         logging.StreamHandler()  # Optional: also log to console
     ]
 )

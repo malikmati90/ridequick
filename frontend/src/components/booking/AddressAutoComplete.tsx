@@ -78,7 +78,7 @@ export function AddressAutocomplete({
     return () => {
       google.maps.event.removeListener(listener)
     }
-  }, [countryCode])
+  }, [countryCode, onChange])
 
   const IconComponent = getPlaceIcon(value?.types ?? [], value?.name ?? "")
 
