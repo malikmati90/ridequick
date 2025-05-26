@@ -9,7 +9,7 @@ import { createStripeCheckoutSession } from "@/lib/booking/checkout"
 
 interface PaymentStepProps {
   onBack: () => void
-  onComplete: () => void // Only used for "cash"
+  onComplete: () => void
 }
 
 export default function PaymentStep({ onBack, onComplete }: PaymentStepProps) {

@@ -31,8 +31,8 @@ export default function BookingSuccessPage() {
   return (
     <div className="max-w-xl mx-auto text-center py-40 px-4">
       <Image
-        src="/success.png"
-        alt="Confirmation"
+        src="/booking-confirmed-icon.png"
+        alt="Booking Confirmed Icon"
         height={75}
         width={75}
         className="relative mx-auto"
