@@ -1,9 +1,17 @@
+import os
+import gdown
 import joblib
+import requests
 import pandas as pd
+from pathlib import Path
 
-# Load the saved model and preprocessing pipeline
-model = joblib.load("fare_model.pkl")
-pipeline = joblib.load("fare_preprocessing_pipeline.pkl")
+# .pkl file id stored in google drive
+FILE_ID = "1_0rtE0H4MlC1uy6vbd7XNIOzcWNdPCTv"
+# This gives you the directory where the current file is located
+BASE_DIR = Path(__file__).resolve().parent
+# These paths work regardless of where the script is called from
+MODEL_PATH = BASE_DIR / "far_model.pkl"
+PIPELINE_PATH = BASE_DIR / "fare_preprocessing_pipeline.pkl"
 
 # Required input fields
 REQUIRED_FEATURES = [
@@ -15,6 +23,23 @@ REQUIRED_FEATURES = [
     "is_night",
     "is_weekend"
 ]
+
+
+def download_model():
+    if not MODEL_PATH.exists():
+        print("Downloading model...")
+        url = f"https://drive.google.com/uc?id={FILE_ID}"
+        gdown.download(url, str(MODEL_PATH), quiet=False)
+        print("Model downloaded.")
+
+
+# Ensure model is downloaded first
+download_model()
+
+# Load the saved model and preprocessing pipeline
+model = joblib.load(MODEL_PATH)
+pipeline = joblib.load(PIPELINE_PATH)
+
 
 def predict_fare(input_data: dict) -> float:
     """
