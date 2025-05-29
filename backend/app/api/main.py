@@ -30,5 +30,5 @@ api_router.include_router(
     dependencies=[Depends(get_current_active_superuser)] # Admin access only
 )
 
-api_router.include_router(directions.router, prefix="/api")
-api_router.include_router(payments.router, prefix="/payments")
+api_router.include_router(directions.router, prefix="/api", tags=["maps"])
+api_router.include_router(payments.router, prefix="/payments", tags=["payments"])

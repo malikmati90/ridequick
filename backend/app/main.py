@@ -7,32 +7,24 @@ import sentry_sdk
 from app.api.main import api_router
 from app.core.config import settings
 
-import logging
-
-
-# Set up logging to a file
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("app.log"),
-        logging.StreamHandler()  # Optional: also log to console
-    ]
-)
-
-logger = logging.getLogger(__name__)
-
 
 def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
 
 
 if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
-    sentry_sdk.init(dsn=str(settings.SENTRY_DSN), enable_tracing=True)
+    sentry_sdk.init(
+        dsn=str(settings.SENTRY_DSN),
+        enable_tracing=True,
+        send_default_pii=True,
+        traces_sample_rate=1.0,                 # To reduce the volume of performance data captured, change traces_sample_rate to a value between 0 and 1
+        profile_session_sample_rate=1.0,
+        profile_lifecycle="trace"
+        )
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    #generate_unique_id_function=custom_generate_unique_id,
+    generate_unique_id_function=custom_generate_unique_id,
 )
 
 # Set all CORS enabled origins
