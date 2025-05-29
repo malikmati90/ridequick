@@ -10,7 +10,7 @@ FILE_ID = "1_0rtE0H4MlC1uy6vbd7XNIOzcWNdPCTv"
 # This gives you the directory where the current file is located
 BASE_DIR = Path(__file__).resolve().parent
 # These paths work regardless of where the script is called from
-MODEL_PATH = BASE_DIR / "far_model.pkl"
+MODEL_PATH = BASE_DIR / "fare_model.pkl"
 PIPELINE_PATH = BASE_DIR / "fare_preprocessing_pipeline.pkl"
 
 # Required input fields

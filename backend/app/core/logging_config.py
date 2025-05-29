@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from config import settings
+from app.core.config import settings
 
 def setup_logging():
     log_level = logging.INFO
