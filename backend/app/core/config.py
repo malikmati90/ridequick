@@ -56,8 +56,8 @@ class Settings(BaseSettings):
     FRONTEND_HOST: str = "http://localhost:3000"
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
     
-    GOOGLE_MAPS_API_KEY: str
-    STRIPE_SECRET_KEY: str
+    GOOGLE_MAPS_API_KEY: str | None = None
+    STRIPE_SECRET_KEY: str | None = None
     STRIPE_SUCCESS_URL: str = FRONTEND_HOST + "/booking/success"
     STRIPE_CANCEL_URL: str = FRONTEND_HOST + "/booking/cancel"
 
