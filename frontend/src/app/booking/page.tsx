@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import BookingFlow from "@/components/booking/BookingFlow"
 import BookingSummary from "@/components/booking/BookingSummary"
+import MobileBookingSummary from "@/components/booking/MobileBookingSummary";
 import { Header } from "@/components/ui/header"
 import { Suspense } from "react"
 
@@ -19,7 +20,11 @@ export default async function BookingPage() {
 
         {/* Right: Booking Summary */}
         <div className="hidden lg:block">
-          {/* <BookingSummary /> */}
+          <BookingSummary />
+        </div>
+
+        <div className="block lg:hidden">
+          <MobileBookingSummary />
         </div>
       </div>
     </main>
