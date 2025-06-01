@@ -14,12 +14,14 @@ interface CategoryStepProps {
 
 export default function CategoryStep({ onBack, onComplete }: CategoryStepProps) {
   // Get state and actions from our store
-  const { selectedVehicle, fareEstimates, setBookingDetails } = useBookingStore()
+  const { selectedVehicle, selectedFare, fareEstimates, setBookingDetails } = useBookingStore()
 
   // Set the initial selected vehicle based on the booking form
-  const handleSelectVehicle = (type: string) => {
+  const handleSelectVehicle = (type: string, fare: number) => {
+    // const fare = fareEstimates.find(f => f.category === selectedVehicle)
     setBookingDetails({
       selectedVehicle: type,
+      selectedFare: fare
     })
   }
 
@@ -40,6 +42,7 @@ export default function CategoryStep({ onBack, onComplete }: CategoryStepProps) 
         .sort((a, b) => a.estimated_fare - b.estimated_fare)
         .map((estimate) => {
           const type = estimate.category
+          const fare = estimate.estimated_fare
           const vehicle = vehicleOptions[type]
 
           return (
@@ -48,7 +51,7 @@ export default function CategoryStep({ onBack, onComplete }: CategoryStepProps) 
             className={`cursor-pointer transition-all ${
               selectedVehicle === type ? "border-yellow-500 ring-2 ring-yellow-200" : "hover:border-gray-300"
             }`}
-            onClick={() => handleSelectVehicle(type)}
+            onClick={() => handleSelectVehicle(type, fare)}
           >
             <CardHeader className="pb-2 flex flex-row items-start justify-between">
               <div>

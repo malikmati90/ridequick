@@ -5,6 +5,7 @@ import { BookingEstimateResponse } from "../../types/booking"
 
 export interface VehicleOption {
   name: string
+  capacity: number
   features: string[]
   image: string
 }
@@ -18,35 +19,32 @@ export interface BookingState {
   passengers: number
   vehicleType: string
 
-  // Step 2: Fare estimation
+  // Fare estimation
   estimatedDistance: number
   estimatedDuration: number
   selectedVehicle: string
+  selectedFare: number
   fareEstimates: BookingEstimateResponse[]
 
-  // Step 3: Contact details
+  // Contact details
   name: string
   phone: string
   email: string
   notes: string
 
-  // Step 4: Payment
+  //  Payment
   paymentMethod: "card" | "paypal" | "cash"
-  cardDetails: {
-    cardNumber: string
-    cardName: string
-    expiryDate: string
-    cvv: string
-  }
 
   // Booking status
-  bookingId: string
   isBookingComplete: boolean
-
   hasHydrated: boolean
+
+  // Booking flow step
+  currentStep: number;
 
   // Actions
   setBookingDetails: (details: Partial<BookingState>) => void
+  setCurrentStep: (step: number) => void;
   resetBooking: () => void
   completeBooking: () => void
 }
@@ -55,16 +53,19 @@ export interface BookingState {
 export const vehicleOptions: Record<string, VehicleOption> = {
   economy: {
     name: "Economy",
+    capacity: 4,
     features: ["Budget-friendly option", "Standard sedan"],
-    image: "/sedan.png?",
+    image: "/sedan.png",
   },
   standard: {
     name: "Standard",
+    capacity: 4,
     features: ["Comfortable ride", "Mid-size vehicle", "Air conditioning"],
-    image: "/van.png?",
+    image: "/van.png",
   },
   premium: {
     name: "Premium",
+    capacity: 4,
     features: [
       "Luxury experience",
       "High-end vehicle",
@@ -98,6 +99,7 @@ export const useBookingStore = create<BookingState>()(
       estimatedDistance: 0,
       estimatedDuration: 0,
       selectedVehicle: "",
+      selectedFare: 0,
       fareEstimates:[],
 
       name: "",
@@ -106,16 +108,11 @@ export const useBookingStore = create<BookingState>()(
       notes: "",
 
       paymentMethod: "card",
-      cardDetails: {
-        cardNumber: "",
-        cardName: "",
-        expiryDate: "",
-        cvv: "",
-      },
-
-      bookingId: "",
+      
       isBookingComplete: false,
       hasHydrated: false,
+
+      currentStep: 0,
 
       // Actions
       setBookingDetails: (details) =>
@@ -123,6 +120,8 @@ export const useBookingStore = create<BookingState>()(
           ...state,
           ...details,
         })),
+
+      setCurrentStep: (step) => set({ currentStep: step }),
 
       resetBooking: () =>
         set((state) => ({
@@ -136,27 +135,21 @@ export const useBookingStore = create<BookingState>()(
           estimatedDistance: 0,
           estimatedDuration: 0,
           selectedVehicle: "",
-          fare: "0",
+          selectedFare: 0,
+          fareEstimates: [],
           name: "",
           phone: "",
           email: "",
           notes: "",
           paymentMethod: "card",
-          cardDetails: {
-            cardNumber: "",
-            cardName: "",
-            expiryDate: "",
-            cvv: "",
-          },
-          bookingId: "",
           isBookingComplete: false,
           hasHydrated: false,
+          currentStep: 0,
         })),
 
       completeBooking: () =>
         set((state) => ({
           ...state,
-          bookingId: Math.floor(100000 + Math.random() * 900000).toString(),
           isBookingComplete: true,
         })),
     }),

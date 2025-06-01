@@ -52,32 +52,25 @@ export default function BookingFlow({ session }: BookingFlowProps) {
   const initialStepParam = searchParams.get("step")
   const [skipContact, setSkipContact] = useState(false) // FLAG
 
-  const [currentStep, setCurrentStep] = useState(() => {
+  const currentStep = useBookingStore((state) => state.currentStep);
+  const setCurrentStep = useBookingStore((state) => state.setCurrentStep);
+
+  // Set initial step based on URL parameter
+  useEffect(() => {
     switch (initialStepParam) {
       case "contact":
-        return STEPS.DETAILS
+        setCurrentStep(STEPS.DETAILS);
+        break;
       case "payment":
-        return STEPS.PAYMENT
+        setCurrentStep(STEPS.PAYMENT);
+        break;
       case "confirmation":
-        return STEPS.SUCCESS
+        setCurrentStep(STEPS.SUCCESS);
+        break;
       default:
-        return STEPS.FARE
+        setCurrentStep(STEPS.FARE);
     }
-  })
-
-  // const { data: session, status } = useSession();
-
-  // console.log("Session status:", status);
-  // console.log("Session data:", session);
-  
-  // Check if user is logged in and update state
-  // useEffect(() => {
-  //   const email = session?.user?.email;
-  //   if (status === "authenticated" || email) {
-  //     setSkipContact(true);
-  //   }
-    
-  // }, [status]);
+  }, [initialStepParam, setCurrentStep]);
 
   useEffect(() => {
     if (session?.accessToken) {
@@ -95,29 +88,29 @@ export default function BookingFlow({ session }: BookingFlowProps) {
 
   // Navigate to next step
   const nextStep = () => {
-    setDirection(1)
+    setDirection(1);
 
-    setCurrentStep(prev => {
-      // Skip DETAILS (Contact Form) if user is logged in
-      if (skipContact && prev === STEPS.FARE) return STEPS.PAYMENT
-      return Math.min(prev + 1, STEPS.SUCCESS)
-    })
+    const next = skipContact && currentStep === STEPS.FARE
+      ? STEPS.PAYMENT
+      : Math.min(currentStep + 1, STEPS.SUCCESS);
 
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }
+    setCurrentStep(next);
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Navigate to previous step
   const prevStep = () => {
-    setDirection(-1)
+    setDirection(-1);
 
-    setCurrentStep(prev => {
-      // If contact is skipped and we're at PAYMENT, go back to FARE
-      if (skipContact && prev === STEPS.PAYMENT) return STEPS.FARE
-      return Math.max(prev - 1, STEPS.FARE)
-    })
-    
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }
+    const prev = skipContact && currentStep === STEPS.PAYMENT
+      ? STEPS.FARE
+      : Math.max(currentStep - 1, STEPS.FARE);
+
+    setCurrentStep(prev);
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Reset and go back to home
   const goToHome = () => {

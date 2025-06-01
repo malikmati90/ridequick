@@ -27,9 +27,8 @@ export default function PaymentStep({ onBack, onComplete }: PaymentStepProps) {
     phone,
     estimatedDistance,
     estimatedDuration,
-    fareEstimates,
     selectedVehicle,
-    setBookingDetails
+    selectedFare,
   } = useBookingStore()
 
   const session = useSessionContext();
@@ -37,8 +36,6 @@ export default function PaymentStep({ onBack, onComplete }: PaymentStepProps) {
 
   const handleContinue = async () => {
     if (!selectedVehicle) return toast.error("Please select a vehicle")
-
-    const selectedFare = fareEstimates.find(f => f.category === selectedVehicle)
     if (!selectedFare) return toast.error("Vehicle pricing not found")
 
     // Check if user is authenticated
@@ -66,7 +63,7 @@ export default function PaymentStep({ onBack, onComplete }: PaymentStepProps) {
         name,
         email,
         phone,
-        price: selectedFare.estimated_fare,
+        price: selectedFare,
         selected_vehicle: selectedVehicle,
         passengers,
         pickup_location: `${pickupLocation?.name} - ${pickupLocation?.formattedAddress}`,
