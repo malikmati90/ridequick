@@ -6,6 +6,8 @@ import { useBookingStore } from "@/lib/store"
 import { Button } from "@/components/ui/button"
 import toast from "react-hot-toast"
 import { createStripeCheckoutSession } from "@/lib/booking/checkout"
+import { CreateSessionParams } from "../../../../types/booking"
+import { useSessionContext } from "@/lib/session-context"
 
 interface PaymentStepProps {
   onBack: () => void
@@ -23,50 +25,76 @@ export default function PaymentStep({ onBack, onComplete }: PaymentStepProps) {
     name,
     email,
     phone,
+    estimatedDistance,
+    estimatedDuration,
     fareEstimates,
     selectedVehicle,
     setBookingDetails
   } = useBookingStore()
 
-
+  const session = useSessionContext();
   const [redirectError, setRedirectError] = useState<string | null>(null)
 
   const handleContinue = async () => {
     if (!selectedVehicle) return toast.error("Please select a vehicle")
+
     const selectedFare = fareEstimates.find(f => f.category === selectedVehicle)
     if (!selectedFare) return toast.error("Vehicle pricing not found")
 
+    // Check if user is authenticated
+    if (!session) {
+      toast.error("Please log in to continue with payment");
+      return;
+    }
     try {
       setIsLoading(true)
       setRedirectError(null)
 
-      const sessionUrl = await createStripeCheckoutSession({
+      // Build scheduled datetime
+      const d = date instanceof Date ? date : new Date(date!)
+      const t = time instanceof Date ? time : new Date(time!)
+      const scheduled = new Date(
+        d.getFullYear(),
+        d.getMonth(),
+        d.getDate(),
+        t.getHours(),
+        t.getMinutes(),
+        t.getSeconds(),
+      )
+
+      const requestBody: CreateSessionParams = {
         name,
         email,
         phone,
         price: selectedFare.estimated_fare,
         selected_vehicle: selectedVehicle,
-        passengers: passengers,
-        pickup_location: pickupLocation?.name + "-" + pickupLocation?.formattedAddress,
-        destination: destination?.name + "-" + destination?.formattedAddress,
-        scheduled_time: new Date(date!.toDateString() + " " + time!.toLocaleTimeString()).toISOString(),
-      })
+        passengers,
+        pickup_location: `${pickupLocation?.name} - ${pickupLocation?.formattedAddress}`,
+        destination: `${destination?.name} - ${destination?.formattedAddress}`,
+        scheduled_time: scheduled.toISOString(),
+        estimatedDistance,
+        estimatedDuration,
+      };
+      
+      const result = await createStripeCheckoutSession(requestBody, session!.accessToken)
 
-      if (sessionUrl) {
-        window.location.href = sessionUrl
+      if (result.error) {
+        // Handle error case
+        setRedirectError(result.error);
+        toast.error(result.error);
+      } else if (result.sessionUrl) {
+        // Success case - redirect to Stripe
+        window.location.href = result.sessionUrl;
       } else {
-        throw new Error("No session URL returned")
-      }
+        // Unexpected case
+        toast.error("Unexpected response from payment service");
+      }   
 
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Stripe redirect failed:", error)
-      } else {
-        console.error("An unknown error occurred during Stripe redirect.")
-      }
-      
       setRedirectError("We were unable to redirect you to Stripe. Please try again shortly.")
       toast.error("Payment redirect failed.")
+    
+    } finally {
       setIsLoading(false)
     }
   }
