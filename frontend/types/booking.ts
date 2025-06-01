@@ -21,6 +21,13 @@ export type BookingEstimateResponse = {
     estimated_fare: number
 }; 
 
+export type FareEstimateWithMeta = {
+    fareEstimates: BookingEstimateResponse[]
+    estimatedDistance: number
+    estimatedDuration: number
+};
+
+  
 export type CreateSessionParams = {
     name: string
     email: string
@@ -31,4 +38,6 @@ export type CreateSessionParams = {
     pickup_location: string | undefined
     destination: string | undefined
     scheduled_time: string
+    estimatedDistance: number
+    estimatedDuration: number
   }

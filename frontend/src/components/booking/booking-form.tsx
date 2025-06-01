@@ -74,7 +74,11 @@ export default function BookingForm() {
     setIsSubmitting(true)
 
     try {
-      const fareEstimates = await estimateFare({
+      const {
+        fareEstimates,
+        estimatedDistance,
+        estimatedDuration
+      } = await estimateFare({
         pickupLocation: values.pickupLocation.formattedAddress,
         destination: values.destination.formattedAddress,
         passengers: values.passengers,
@@ -94,7 +98,9 @@ export default function BookingForm() {
         date: values.date,
         time: values.time,
         passengers: values.passengers,
-        fareEstimates: fareEstimates
+        fareEstimates: fareEstimates,
+        estimatedDistance: estimatedDistance,
+        estimatedDuration: estimatedDuration
       })
 
       router.push("/booking")

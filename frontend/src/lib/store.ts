@@ -20,6 +20,7 @@ export interface BookingState {
 
   // Step 2: Fare estimation
   estimatedDistance: number
+  estimatedDuration: number
   selectedVehicle: string
   fareEstimates: BookingEstimateResponse[]
 
@@ -95,6 +96,7 @@ export const useBookingStore = create<BookingState>()(
       vehicleType: "standard",
 
       estimatedDistance: 0,
+      estimatedDuration: 0,
       selectedVehicle: "",
       fareEstimates:[],
 
@@ -132,6 +134,7 @@ export const useBookingStore = create<BookingState>()(
           passengers: 2,
           vehicleType: "standard",
           estimatedDistance: 0,
+          estimatedDuration: 0,
           selectedVehicle: "",
           fare: "0",
           name: "",

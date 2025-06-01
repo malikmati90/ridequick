@@ -1,5 +1,9 @@
 import { baseUrl } from '@/lib/definitions'
-import { BookingEstimateRequest, BookingEstimateResponse } from '../../../types/booking'
+import { 
+  BookingEstimateRequest,
+  BookingEstimateResponse,
+  FareEstimateWithMeta 
+} from '../../../types/booking'
 
 
 export async function estimateFare({
@@ -16,7 +20,7 @@ export async function estimateFare({
     scheduledTime: Date
     isAirport?: boolean
     isHoliday?: boolean
-  }): Promise<BookingEstimateResponse[]> {
+  }): Promise<FareEstimateWithMeta> {
 
     // Call backend directions endpoint
     const directionsRes = await fetch(baseUrl +
@@ -50,9 +54,11 @@ export async function estimateFare({
     }
   
     const fareEstimates: BookingEstimateResponse[] = await estimateRes.json()
-    console.log(fareEstimates)
-
     
 
-    return fareEstimates
+    return {
+      fareEstimates,
+      estimatedDistance: distance_km,
+      estimatedDuration: Math.round(duration_min),
+    }
   }
