@@ -50,10 +50,3 @@ send_email(
 )
 
 print("Email sent successfully!")
-
-
-
-
-
-
-eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDk0ODUyMzgsInN1YiI6IjkifQ.XweKIWsr1OC41nQPyUfbF2zoP1HGrcbORuP9eWHtL6I
