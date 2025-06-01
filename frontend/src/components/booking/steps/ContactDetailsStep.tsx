@@ -5,12 +5,15 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { contactSchema } from "@/lib/zodSchemas"
 import { z } from "zod"
 import { useBookingStore } from "@/lib/store"
-
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Form, FormField, FormLabel, FormControl, FormMessage, FormItem, FormDescription } from "@/components/ui/form"
 import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ensureUserAndLogin } from "@/lib/booking/authFlow"
+import toast from "react-hot-toast"
+import { redirectToLogin } from "@/lib/utils/redirectToLogin"
+
 
 interface ContactDetailsStepProps {
   onBack: () => void
@@ -21,7 +24,7 @@ type ContactFormValues = z.infer<typeof contactSchema>
 
 export default function ContactDetailsStep({ onBack, onComplete }: ContactDetailsStepProps) {
   const { name, phone, email, notes, setBookingDetails } = useBookingStore()
-
+  
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -32,9 +35,32 @@ export default function ContactDetailsStep({ onBack, onComplete }: ContactDetail
     },
   })
 
-  function onSubmit(values: ContactFormValues) {
-    setBookingDetails(values)
-    onComplete()
+  async function onSubmit(values: ContactFormValues) {
+    try {
+      const result = await ensureUserAndLogin({
+        fullName: values.name,
+        email: values.email,
+        phoneNumber: values.phone,
+      })
+
+      if (result?.status === "exists") {
+        // If user already exists, redirect him to login with callback
+        redirectToLogin(result.callbackUrl)
+        return // Stop further execution
+      }
+
+      if (result?.status === "error") {
+        toast.error(result.message || "Login failed.");
+        return;
+      }
+  
+      setBookingDetails(values)
+      onComplete()
+  
+    } catch (error) {
+      toast.error("Could not save your details. Please try again.")
+      console.error(error)
+    }
   }
 
   return (
