@@ -1,8 +1,10 @@
+import logging
 from sqlmodel import Session, select
-from app.models import Payment, PaymentStatus, PaymentMethod, CheckoutRequest
+from app.models import Payment, PaymentStatus, PaymentMethod
 from fastapi import HTTPException
-from app.core.config import settings
-import stripe
+
+
+logger = logging.getLogger(__name__)
 
 
 def create_payment(*, session: Session, booking_id: int, amount: float, method: PaymentMethod) -> Payment:
@@ -36,36 +38,20 @@ def read_payment_by_booking(*, session: Session, booking_id: int) -> Payment:
         raise HTTPException(status_code=404, detail="Payment not found")
     return payment
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
 
-def create_checkout_session(*, data: CheckoutRequest):
-    session = stripe.checkout.Session.create(
-        payment_method_types=["card"],
-        mode="payment",
-        line_items=[
-            {
-                "price_data": {
-                    "currency": "eur",
-                    "unit_amount": int(data.price * 100),  # Stripe uses cents
-                    "product_data": {
-                        "name": f"{data.selected_vehicle.capitalize()} Taxi Ride",
-                        "description": f"""From: {data.pickup_location}
-                                        To: {data.destination}
-                                        Number of Passengers: {data.passengers}""",
-                    },
-                },
-                "quantity": 1,
-            }
-        ],
-        customer_email=data.email,
-        metadata={
-            "name": data.name,
-            "phone": data.phone,
-            "pickup": data.pickup_location,
-            "destination": data.destination,
-            "time": data.scheduled_time,
-        },
-        success_url=settings.STRIPE_SUCCESS_URL,
-        cancel_url=settings.STRIPE_CANCEL_URL,
-    )
-    return {"url": session.url}
+def get_payment_by_transaction_id(db: Session, transaction_id: str) -> Payment | None:
+    """
+    Check if a payment already exists for the given transaction ID.
+    Used to prevent duplicate webhook processing.
+    
+    Args:
+        db: Database session
+        transaction_id: Stripe session or payment intent ID
+        
+    Returns:
+        Payment object if found, None otherwise
+    """
+    return db.exec(
+        select(Payment).where(Payment.transaction_id == transaction_id)
+    ).first()
+

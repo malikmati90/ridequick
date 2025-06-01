@@ -58,6 +58,7 @@ class Settings(BaseSettings):
     
     GOOGLE_MAPS_API_KEY: str | None = None
     STRIPE_SECRET_KEY: str | None = None
+    STRIPE_WEBHOOK_SECRET: str | None = None
     STRIPE_SUCCESS_URL: str = FRONTEND_HOST + "/booking/success"
     STRIPE_CANCEL_URL: str = FRONTEND_HOST + "/booking/cancel"
 
