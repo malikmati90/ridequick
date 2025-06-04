@@ -39,7 +39,7 @@ export default function PaymentStep({ onBack, onComplete }: PaymentStepProps) {
     if (!selectedFare) return toast.error("Vehicle pricing not found")
 
     // Check if user is authenticated
-    if (!session) {
+    if (!session?.accessToken) {
       toast.error("Please log in to continue with payment");
       return;
     }

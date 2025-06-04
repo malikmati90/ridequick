@@ -274,12 +274,6 @@ export function TimePicker({
       }
     }
   }
-  console.log({
-    hours,
-    visibleHourIndex,
-    maxScroll: hours.length - 5
-  })
-  
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

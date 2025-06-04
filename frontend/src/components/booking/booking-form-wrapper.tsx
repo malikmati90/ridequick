@@ -12,8 +12,13 @@ export default function BookingFormWrapper() {
     libraries,
   });
 
-  if (loadError) return <div>Failed to load Google Maps API</div>;
-  if (!isLoaded) return;
+  if (loadError) return <div className="text-red-600">Failed to load Google Maps API</div>;
 
-  return <BookingForm />;
+  return (
+    <div style={{ minHeight: "450px" }}> {/* approximate height of the final form */}
+      {isLoaded ? <BookingForm /> : (
+        <div className="w-full h-full animate-pulse bg-white/10 rounded-lg" />
+      )}
+    </div>
+  );
 }

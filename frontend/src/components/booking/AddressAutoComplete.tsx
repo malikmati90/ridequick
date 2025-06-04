@@ -69,8 +69,7 @@ export function AddressAutocomplete({
         lng,
         types,
       }
-
-      console.log("Selected place:", structured) //  Log full place data
+      
       onChange(structured)
       setSessionToken(new google.maps.places.AutocompleteSessionToken()) // reset the token after being used
     })

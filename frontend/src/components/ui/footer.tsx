@@ -31,17 +31,17 @@ export default function Footer() {
             <h3 className="font-bold text-lg mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#features" className="text-gray-400 hover:text-yellow-500">
+                <Link href="/#features" className="text-gray-400 hover:text-yellow-500">
                   Features
                 </Link>
               </li>
               <li>
-                <Link href="#services" className="text-gray-400 hover:text-yellow-500">
+                <Link href="/#services" className="text-gray-400 hover:text-yellow-500">
                   Our Services
                 </Link>
               </li>
               <li>
-                <Link href="#faq" className="text-gray-400 hover:text-yellow-500">
+                <Link href="/#faq" className="text-gray-400 hover:text-yellow-500">
                   FAQ
                 </Link>
               </li>
@@ -58,12 +58,12 @@ export default function Footer() {
             <h3 className="font-bold text-lg mb-4">Legal</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#" className="text-gray-400 hover:text-yellow-500">
+                <Link href="/terms" className="text-gray-400 hover:text-yellow-500">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-400 hover:text-yellow-500">
+                <Link href="/privacy" className="text-gray-400 hover:text-yellow-500">
                   Privacy Policy
                 </Link>
               </li>
