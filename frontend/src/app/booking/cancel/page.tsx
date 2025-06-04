@@ -8,24 +8,23 @@ import { useEffect } from "react"
 
 
 export default function BookingCancelPage() {
-  const { hasHydrated, isBookingComplete, resetBooking } = useBookingStore()
+  const { isBookingComplete, resetBooking } = useBookingStore()
   const router = useRouter()
 
   // Prevent access unless the booking flow was started
   useEffect(() => {
-    if (hasHydrated && !isBookingComplete) {
+    if (!isBookingComplete) {
         router.replace("/")
     }
-  }, [hasHydrated, isBookingComplete, router])
+  }, [isBookingComplete, router])
 
   // Clear state after short delay
   useEffect(() => { 
-    if (!hasHydrated) return
     const timer = setTimeout(() => resetBooking(), 5000)
     return () => clearTimeout(timer)
-  }, [hasHydrated, resetBooking])
+  }, [resetBooking])
 
-  if (!hasHydrated || !isBookingComplete) return null
+  if (!isBookingComplete) return null
 
   return (
     <div className="max-w-xl mx-auto text-center py-40 px-4">

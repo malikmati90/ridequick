@@ -71,7 +71,7 @@ normal_booking = {
     "is_night": 1, 
     "is_weekend": 0,
     'day_of_week': 4, 
-    'month': 8, 
+    'month': 2, 
     'hour':20
 }
 
@@ -79,11 +79,11 @@ airport_booking = {
     "distance_km": 16,
     "duration_min": 20,
     "passenger_count": 4,
-    "is_airport_ride": 1,
+    "is_airport_ride": 0,
     "is_holiday": 0,
-    "is_night": 0,
-    "is_weekend": 1,
-    'day_of_week': 6, 
+    "is_night": 1,
+    "is_weekend": 0,
+    'day_of_week': 4, 
     'month': 8, 
     'hour': 20
 }

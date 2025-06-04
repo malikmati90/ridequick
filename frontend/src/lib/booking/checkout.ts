@@ -43,3 +43,14 @@ export async function createStripeCheckoutSession(
     return { error: 'Unexpected server error. Please try again.' };
   }
 }
+
+
+export async function verifyPaymentIntent(sessionId: string) {
+  const res = await fetch(`${baseUrl}/payments/verify-booking?session_id=${sessionId}`);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch Stripe session");
+  }
+
+  return await res.json();
+}

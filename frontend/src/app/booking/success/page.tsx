@@ -1,31 +1,77 @@
 'use client'
 
 import { useBookingStore } from "@/lib/store"
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
+import { verifyPaymentIntent } from "@/lib/booking/checkout"
 
 
 export default function BookingSuccessPage() {
-  const { hasHydrated, isBookingComplete, resetBooking } = useBookingStore()
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
   const router = useRouter()
+  const { isBookingComplete, completeBooking, resetBooking } = useBookingStore()
+
 
   useEffect(() => {
-    if (hasHydrated && !isBookingComplete) {
-      router.replace("/") // redirect to homepage if not completed
+    const sessionId = searchParams.get("session_id");
+    if (!sessionId) {
+      setError(true);
+      setLoading(false);
+      return
     }
-  }, [hasHydrated, isBookingComplete, router])
+  
+    const verify = async () => {
+      try {
+        const res = await verifyPaymentIntent(sessionId);
+        if (res?.valid) completeBooking();
+        else setError(true); // invalid or unpaid booking
+      } catch (err) {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verify();
+  }, []);
+  
 
   useEffect(() => {
-    // Reset the store after 5 seconds
-    if (!hasHydrated) return
+    if (!isBookingComplete) return
     const timer = setTimeout(() => resetBooking(), 5000)
     return () => clearTimeout(timer)
-  }, [hasHydrated, resetBooking])
+  }, [resetBooking])
 
-  if (!hasHydrated || !isBookingComplete) {
-    return null
+  if (error) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg text-red-600 font-semibold">Unable to verify your booking</p>
+          <p className="text-sm text-gray-500 mt-1">
+            Please contact support or try again later.
+          </p>
+          <Button className="mt-8 bg-yellow-500 hover:bg-yellow-600 text-white" onClick={() => router.push("/")}>
+            Back to Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
+  
+
+  if (loading || !isBookingComplete) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-6 w-6 border-4 border-yellow-500 border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-sm text-gray-500">Verifying your booking...</p>
+        </div>
+      </div>
+    )
   }
 
   return (

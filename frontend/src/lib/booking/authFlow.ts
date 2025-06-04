@@ -97,3 +97,26 @@ export async function ensureUserAndLogin({
 
   return {status: "created"}
 }
+
+
+export async function getUserMe(access_token: string) {
+  try {
+    const response = await fetch(`${baseUrl}/users/me`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      // console.warn("Failed to fetch user data:", error);
+      return null; // Explicitly return null to indicate failure
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error in getUserMe:", error);
+    return null;
+  }
+}

@@ -12,6 +12,22 @@ logger = logging.getLogger(__name__)
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
+def verify_booking(*, db: Session, session_id: str):
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+        payment_intent = session.payment_intent
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=500, detail=f"Stripe error: {str(e)}")
+    
+    if payment_intent:
+        payment = crud.payment.get_payment_by_transaction_id(db, payment_intent)
+        if not payment or payment.status != PaymentStatus.paid:
+            raise HTTPException(status_code=403, detail="Invalid or unpaid booking")
+        return {"valid": True}
+    
+    return {"valid": False}
+
+
 def create_checkout_session(*, data: CheckoutRequest, booking_id: int):
     # Parse the scheduled_time string to extract date and time
     try:
