@@ -260,8 +260,17 @@ export default function BookingForm() {
             className="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-6 text-lg"
             disabled={isSubmitting}
           >
-            <Search className="mr-2 h-5 w-5" />
-            {isSubmitting ? "Processing..." : "Find a Ride"}
+            {isSubmitting ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Processing...</span>
+              </div>
+            ) : (
+              <>
+                <Search className="mr-2 h-5 w-5" />
+                Find a Ride
+              </>
+            )}
           </Button>
         </form>
       </Form>

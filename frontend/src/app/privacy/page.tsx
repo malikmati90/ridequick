@@ -21,7 +21,7 @@ export default function PrivacyPolicyPage() {
             <section>
               <h2 className="text-lg font-semibold text-gray-900">1. Introduction</h2>
               <p className="mt-2">
-                Welcome to <strong>RideQuick</strong> ("we," "our," or "us"). This Privacy Policy explains how we collect, use, and safeguard your personal information. By using our website or services, you consent to this Privacy Policy.
+                Welcome to <strong>RideQuick</strong> (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). This Privacy Policy explains how we collect, use, and safeguard your personal information. By using our website or services, you consent to this Privacy Policy.
               </p>
             </section>
 

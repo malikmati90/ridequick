@@ -21,7 +21,7 @@ export default function TermsOfServicePage() {
             <section>
               <h2 className="text-lg font-semibold text-gray-900">1. Introduction</h2>
               <p className="mt-2">
-                Welcome to <strong>RideQuick</strong> ("we," "our," or "us"). By accessing or using our website and services, you agree to comply with and be bound by these Terms and Conditions. Please read them carefully.
+                Welcome to <strong>RideQuick</strong> (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). By accessing or using our website and services, you agree to comply with and be bound by these Terms and Conditions. Please read them carefully.
               </p>
             </section>
 
