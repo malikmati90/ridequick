@@ -33,7 +33,11 @@ def read_my_bookings(session: SessionDep, current_user: CurrentUser) -> List[Boo
     return crud.booking.read_bookings_by_user(session=session, user_id=current_user.id)
 
 
-@router.get("/", response_model=BookingsOut)
+@router.get(
+    "/",
+    dependencies=[Depends(get_current_active_superuser)],
+    response_model=BookingsOut
+)
 def read_bookings(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
     return crud.booking.read_bookings(session=session, skip=skip, limit=limit)
 
@@ -47,7 +51,11 @@ def read_bookings_complete(session: SessionDep, skip: int = 0, limit: int = 100)
     return crud.booking.read_bookings_complete(session=session, skip=skip, limit=limit)
 
 
-@router.get("/{booking_id}", response_model=BookingOut)
+@router.get(
+    "/{booking_id}",
+    dependencies=[Depends(get_current_active_superuser)],
+    response_model=BookingOut
+)
 def read_booking(booking_id: int, session: SessionDep) -> Any:
     booking = crud.booking.read_booking_by_id(session=session, booking_id=booking_id)
     if not booking:

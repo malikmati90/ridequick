@@ -7,4 +7,3 @@ from . import booking
 from . import payment
 from . import pricing
 from . import email
-from . import stripe

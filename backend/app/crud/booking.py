@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from app.utils.time import now_madrid
 
 from .payment import create_payment
-from app.utils.fare import estimate_fare
+from app.services.fare import estimate_fare
 from app.models import (
     Booking,
     BookingCreateMe,
