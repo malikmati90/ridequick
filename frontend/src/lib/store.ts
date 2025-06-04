@@ -37,7 +37,6 @@ export interface BookingState {
 
   // Booking status
   isBookingComplete: boolean
-  hasHydrated: boolean
 
   // Booking flow step
   currentStep: number;
@@ -46,6 +45,7 @@ export interface BookingState {
   setBookingDetails: (details: Partial<BookingState>) => void
   setCurrentStep: (step: number) => void;
   resetBooking: () => void
+  resetInitialBooking: () => void
   completeBooking: () => void
 }
 
@@ -55,13 +55,13 @@ export const vehicleOptions: Record<string, VehicleOption> = {
     name: "Economy",
     capacity: 4,
     features: ["Budget-friendly option", "Standard sedan"],
-    image: "/sedan.png",
+    image: "/economy.png",
   },
   standard: {
     name: "Standard",
     capacity: 4,
     features: ["Comfortable ride", "Mid-size vehicle", "Air conditioning"],
-    image: "/van.png",
+    image: "/standard.png",
   },
   premium: {
     name: "Premium",
@@ -73,7 +73,7 @@ export const vehicleOptions: Record<string, VehicleOption> = {
       "Free Wi-Fi",
       "Bottled water",
     ],
-    image: "/placeholder.svg?",
+    image: "/premium.png",
   },
 //   van: {
 //     name: "Van",
@@ -110,8 +110,6 @@ export const useBookingStore = create<BookingState>()(
       paymentMethod: "card",
       
       isBookingComplete: false,
-      hasHydrated: false,
-
       currentStep: 0,
 
       // Actions
@@ -143,7 +141,23 @@ export const useBookingStore = create<BookingState>()(
           notes: "",
           paymentMethod: "card",
           isBookingComplete: false,
-          hasHydrated: false,
+          currentStep: 0,
+        })),
+      
+      resetInitialBooking: () =>
+        set((state) => ({
+          ...state,
+          date: undefined,
+          time: undefined,
+          passengers: 2,
+          vehicleType: "standard",
+          estimatedDistance: 0,
+          estimatedDuration: 0,
+          selectedVehicle: "",
+          selectedFare: 0,
+          fareEstimates: [],
+          paymentMethod: "card",
+          isBookingComplete: false,
           currentStep: 0,
         })),
 
@@ -155,9 +169,6 @@ export const useBookingStore = create<BookingState>()(
     }),
     {
       name: "taxi-booking-storage",
-      onRehydrateStorage: () => (state) => {
-        state?.setBookingDetails?.({ hasHydrated: true })
-      },
     },
   ),
 )

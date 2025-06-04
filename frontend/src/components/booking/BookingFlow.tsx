@@ -8,9 +8,9 @@ import { useBookingStore } from "@/lib/store"
 import CategoryStep from "./steps/CategoryStep"
 import ContactDetailsStep from "./steps/ContactDetailsStep"
 import PaymentStep from "./steps/PaymentStep"
-import SuccessStep from "./steps/SuccessStep"
 import { SessionProvider } from '@/lib/session-context';
 import { Session } from "next-auth"
+import { getUserMe } from "@/lib/booking/authFlow"
 
 
 interface BookingFlowProps {
@@ -22,7 +22,6 @@ const STEPS = {
   FARE: 0,
   DETAILS: 1,
   PAYMENT: 2,
-  SUCCESS: 3,
 }
 
 // Animation variants
@@ -47,7 +46,7 @@ export default function BookingFlow({ session }: BookingFlowProps) {
 
   // const [currentStep, setCurrentStep] = useState(STEPS.FARE)
   const [direction, setDirection] = useState(0)
-  const { pickupLocation } = useBookingStore()
+  const { pickupLocation, setBookingDetails } = useBookingStore()
 
   const initialStepParam = searchParams.get("step")
   const [skipContact, setSkipContact] = useState(false) // FLAG
@@ -64,19 +63,38 @@ export default function BookingFlow({ session }: BookingFlowProps) {
       case "payment":
         setCurrentStep(STEPS.PAYMENT);
         break;
-      case "confirmation":
-        setCurrentStep(STEPS.SUCCESS);
-        break;
       default:
         setCurrentStep(STEPS.FARE);
     }
   }, [initialStepParam, setCurrentStep]);
 
   useEffect(() => {
-    if (session?.accessToken) {
-      setSkipContact(true);
-    }
-  }, [session]);
+    const checkSessionAndFetchUser = async () => {
+      if (session?.accessToken) {
+        try {
+          const userMe = await getUserMe(session.accessToken);
+          if (userMe) {
+            setBookingDetails({
+              name: userMe.full_name,
+              email: userMe.email,
+              phone: userMe.phone_number,
+            });
+            setSkipContact(true);
+          }
+        } catch (err) {
+          router.push("/")
+        }
+      }
+    };
+  
+    checkSessionAndFetchUser();
+  }, []);
+  
+  // useEffect(() => {
+  //   if (session?.accessToken) {
+  //     setSkipContact(true);
+  //   }
+  // }, [session]);
 
   // Check if we have the necessary data to start the booking process
   useEffect(() => {
@@ -92,7 +110,7 @@ export default function BookingFlow({ session }: BookingFlowProps) {
 
     const next = skipContact && currentStep === STEPS.FARE
       ? STEPS.PAYMENT
-      : Math.min(currentStep + 1, STEPS.SUCCESS);
+      : Math.min(currentStep + 1, STEPS.PAYMENT);
 
     setCurrentStep(next);
 
@@ -135,7 +153,7 @@ export default function BookingFlow({ session }: BookingFlowProps) {
           <div className="mb-8">
             <ProgressSteps
               currentStep={currentStep}
-              steps={["Vehicle Selection", "Contact Details", "Payment", "Confirmation"]}
+              steps={["Vehicle Selection", "Contact Details", "Payment"]}
             />
           </div>
 
@@ -183,19 +201,6 @@ export default function BookingFlow({ session }: BookingFlowProps) {
                 </motion.div>
               )}
 
-              {currentStep === STEPS.SUCCESS && (
-                <motion.div
-                  key="success"
-                  custom={direction}
-                  variants={variants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ type: "tween", duration: 0.3 }}
-                >
-                  <SuccessStep onBackToHome={goToHome} />
-                </motion.div>
-              )}
             </AnimatePresence>
           </div>
         </div>
