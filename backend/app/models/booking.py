@@ -1,6 +1,5 @@
 """ Booking models """
-from zoneinfo import ZoneInfo
-from pydantic import field_validator
+from pydantic import BaseModel
 from sqlalchemy import Column, DateTime
 from sqlmodel import Relationship, SQLModel, Field
 from typing import Optional, Union
@@ -18,6 +17,8 @@ class BookingStatus(str, Enum):
     assigned = "assigned"
     completed = "completed"
     canceled = "canceled"
+    expired = "expired"                 # When checkout session expires (user didn't pay in time)
+    payment_failed = "payment_failed"   # When payment processing fails (card declined, etc.)
 
 
 # Shared properties
@@ -34,7 +35,7 @@ class BookingBase(SQLModel):
 # DB table
 class Booking(BookingBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key="user.id")
+    user_id: Optional[int] = Field(default=None, foreign_key="user.id")
     driver_id: Optional[int] = Field(default=None, foreign_key="driver.id")
 
     cancellation_reason: Optional[str] = None
@@ -44,12 +45,12 @@ class Booking(BookingBase, table=True):
 
     created_at: datetime = Field(
         default_factory=now_madrid,
-        sa_column=Column(DateTime(timezone=True), default=datetime.now, nullable=False)
+        sa_column=Column(DateTime(timezone=True), default=now_madrid, nullable=False)
     )
 
     updated_at: datetime = Field(
         default_factory=now_madrid,
-        sa_column=Column(DateTime(timezone=True), default=datetime.now, onupdate=datetime.now, nullable=False)
+        sa_column=Column(DateTime(timezone=True), default=now_madrid, onupdate=now_madrid, nullable=False)
     )
     
     user: "User" = Relationship(back_populates="bookings")
@@ -67,7 +68,7 @@ class BookingCreateMe(SQLModel):
     distance_km: float
     duration_minutes: int
     fare: float
-    payment_method: PaymentMethod
+    payment_method: PaymentMethod = Field(default=PaymentMethod.card)
 
 
 class BookingCreateAdmin(BookingCreateMe):
@@ -93,7 +94,7 @@ class BookingFullOut(BookingBase):
     id: int
     user_id: int
     user_email: str
-    user_full_name: str
+    user_full_name: Optional[str]
     driver_id: Optional[int]
     driver_license_number: Optional[str]
     distance_km: Optional[float]
@@ -118,3 +119,29 @@ class BookingEstimateRequest(SQLModel):
 class BookingEstimateResponse(SQLModel):
     category: VehicleCategory
     estimated_fare: float
+
+
+class CheckoutRequest(BaseModel):
+    name: str
+    email: str
+    phone: str
+    price: float
+    selected_vehicle: str
+    passengers: int
+    pickup_location: str
+    destination: str
+    scheduled_time: str
+    estimatedDistance: float
+    estimatedDuration: int
+
+    def to_booking_create_me(self) -> BookingCreateMe:
+        return BookingCreateMe(
+            pickup_location=self.pickup_location,
+            dropoff_location=self.destination,
+            scheduled_time=self.scheduled_time,
+            passenger_count=self.passengers,
+            fare=self.price,
+            vehicle_category=self.selected_vehicle,
+            distance_km=self.estimatedDistance,
+            duration_minutes=self.estimatedDuration,
+        )

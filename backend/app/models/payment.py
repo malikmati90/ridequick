@@ -4,7 +4,7 @@ from enum import Enum
 from datetime import datetime
 from typing import Optional
 
-from app.utils.time import now_madrid
+from app.utils.time import now_madrid 
 
 
 class PaymentMethod(str, Enum):
@@ -17,6 +17,7 @@ class PaymentStatus(str, Enum):
     failed = "failed"
     refunded = "refunded"
     canceled = "canceled"
+    expired = "expired"     # When checkout session expires before payment
 
 
 class Payment(SQLModel, table=True):
@@ -25,16 +26,16 @@ class Payment(SQLModel, table=True):
     method: PaymentMethod
     status: PaymentStatus = PaymentStatus.pending
     amount: float
-    transaction_id: Optional[str] = None  # e.g., Stripe ID or wallet tx
+    transaction_id: Optional[str] = None  # Stripe ID
 
     created_at: datetime = Field(
         default_factory=now_madrid,
-        sa_column=Column(DateTime(timezone=True), default=datetime.now, nullable=False)
+        sa_column=Column(DateTime(timezone=True), default=now_madrid, nullable=False)
     )
 
     updated_at: datetime = Field(
         default_factory=now_madrid,
-        sa_column=Column(DateTime(timezone=True), default=datetime.now, onupdate=datetime.now, nullable=False)
+        sa_column=Column(DateTime(timezone=True), default=now_madrid, onupdate=now_madrid, nullable=False)
     )
 
     booking: "Booking" = Relationship(back_populates="payment")
