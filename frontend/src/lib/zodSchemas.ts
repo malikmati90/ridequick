@@ -25,3 +25,39 @@ export const SignUpSchema = z.object({
     .max(15, { message: "Phone number is too long." })
     .regex(/^\d+$/, { message: "Phone number should contain only digits." }),
   });
+
+
+export const placeSchema = z.object({
+  formattedAddress: z.string().min(1, "Invalid address"),
+  name: z.string().min(1, "Invalid place name"),
+  lat: z.number(),
+  lng: z.number(),
+  types: z.array(z.string()).optional(),
+}).strict()
+  
+export const formSchema = z.object({
+  pickupLocation: placeSchema,
+  destination: placeSchema,
+
+  date: z.date({
+    required_error: "Please select a date.",
+  }),
+
+  time: z.date({
+    required_error: "Please select a time.",
+  }),
+
+  passengers: z.coerce.number().min(1, {
+    message: "Please select number of passengers.",
+  }),
+})
+  
+export const contactSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  phone: z
+    .string()
+    .min(9, "Phone must be at least 9 digits")
+    .regex(/^[0-9+\-() ]+$/, "Invalid phone number"),
+  email: z.string().email("Invalid email address"),
+  notes: z.string().max(500).optional(),
+})

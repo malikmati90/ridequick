@@ -66,7 +66,6 @@ export async function registerUser(prevState: State, formData: FormData) {
             };
         }
     } catch (error) {
-        console.log(error);
         serverError = 'Unexpected Error. Please try again later.';
         isLoading = false;  // Stop loading on error
     }

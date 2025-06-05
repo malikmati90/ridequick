@@ -55,20 +55,20 @@ const Header = ({
   },
 
   menu = [
-    { title: "Features", url: "#features" },
-    { title: "How It Works", url: "#how-it-works" },
+    { title: "Features", url: "/#features" },
+    { title: "How It Works", url: "/#how-it-works" },
     {
       title: "Services",
-      url: "#services",
-      items: [
-        { title: "Standard Taxi", url: "#standard-taxi", icon: <Car className="h-5 w-5 text-yellow-500" /> },
-        { title: "VIP/VTC Service", url: "#vtc-service", icon: <Crown className="h-5 w-5 text-yellow-500" /> },
-        { title: "Airport Transfers", url: "#airport-transfers", icon: <Plane className="h-5 w-5 text-yellow-500" /> },
-        { title: "Hourly/Charter Service", url: "#hourly-service", icon: <Clock className="h-5 w-5 text-yellow-500" /> },
-      ],
+      url: "/#services",
+      // items: [
+      //   { title: "Standard Taxi", url: "#standard-taxi", icon: <Car className="h-5 w-5 text-yellow-500" /> },
+      //   { title: "VIP/VTC Service", url: "#vtc-service", icon: <Crown className="h-5 w-5 text-yellow-500" /> },
+      //   { title: "Airport Transfers", url: "#airport-transfers", icon: <Plane className="h-5 w-5 text-yellow-500" /> },
+      //   { title: "Hourly/Charter Service", url: "#hourly-service", icon: <Clock className="h-5 w-5 text-yellow-500" /> },
+      // ],
     },
-    { title: "Testimonials", url: "#testimonials" },
-    { title: "FAQs", url: "#faq" },
+    { title: "Testimonials", url: "/#testimonials" },
+    { title: "FAQs", url: "/#faq" },
   ],
 
   auth = {

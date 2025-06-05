@@ -1,10 +1,11 @@
-from datetime import datetime
 from typing import List, Optional
 from sqlmodel import Session, select, func
 from fastapi import HTTPException
 
+from app.utils.time import now_madrid
+
 from .payment import create_payment
-from app.utils.fare import estimate_fare
+from app.services.fare import estimate_fare
 from app.models import (
     Booking,
     BookingCreateMe,
@@ -16,7 +17,8 @@ from app.models import (
     BookingEstimateResponse,
     PricingRule,
     User,
-    Driver
+    Driver,
+    Payment
 )
 
 def _flatten(b: Booking) -> BookingFullOut:
@@ -32,7 +34,7 @@ def _flatten(b: Booking) -> BookingFullOut:
         id=b.id,
         user_id=b.user_id,
         user_email=u.email,
-        user_full_name=u.full_name,
+        user_full_name=(u.full_name if u.full_name else None),
         driver_id=b.driver_id,
         driver_license_number=(d.license_number if d else None),
         status=b.status,
@@ -52,8 +54,6 @@ def create_booking_me(
 ) -> BookingFullOut:
     
     booking_data = booking_in.model_dump(exclude={"payment_method"})
-    
-    booking_data = booking_in.model_dump(exclude={"payment_method"})
     booking = Booking(**booking_data)
     booking.user_id = current_user.id
 
@@ -70,7 +70,7 @@ def create_booking_me(
     )
 
     session.refresh(booking, attribute_names=["user", "driver", "payment"])
-    return _flatten(booking)
+    return booking
 
 
 def create_booking_admin(
@@ -186,3 +186,55 @@ def estimate_booking_price(*, session: Session, body: BookingEstimateRequest) ->
         ))
 
     return estimates
+
+
+def update_booking_status (
+    db: Session, 
+    booking: Booking, 
+    booking_status: str, 
+    payment_status: str | None = None,
+    transaction_id: str | None = None
+) -> None:
+    """
+    Update booking and payment status with timestamp.
+    
+    Args:
+        db: Database session
+        booking: Booking object to update
+        booking_status: New booking status (confirmed, expired, payment_failed, etc.)
+        payment_status: New payment status (paid, failed, expired, etc.)
+        transaction_id: Transaction ID to store in payment record
+    """
+    
+    # Update booking
+    booking.status = booking_status
+    booking.updated_at = now_madrid()
+    
+    # Update payment if it exists and payment_status is provided
+    if booking.payment and payment_status:
+        booking.payment.status = payment_status
+        booking.payment.updated_at = now_madrid()
+        
+        # Update transaction ID if provided
+        if transaction_id:
+            booking.payment.transaction_id = transaction_id
+    
+    db.commit()
+
+
+def get_booking_by_payment_intent(db: Session, payment_intent_id: str) -> Booking | None:
+    """
+    Find a booking by its associated payment intent ID.
+    
+    Args:
+        db: Database session
+        payment_intent_id: Stripe payment intent ID
+        
+    Returns:
+        Booking object if found, None otherwise
+    """
+    return db.exec(
+        select(Booking).join(Payment).where(
+            Payment.transaction_id == payment_intent_id
+        )
+    ).first()
