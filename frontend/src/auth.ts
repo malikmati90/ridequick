@@ -54,7 +54,10 @@ async function authenticate(email: string, password: string) {
             role: userDetails.role,
         } as User
 
-        return user;
+        return {
+            ...user, 
+            accessToken: data.access_token
+        };
 
     } catch (error) {
         console.error("Login failed:", error);
@@ -62,7 +65,7 @@ async function authenticate(email: string, password: string) {
     }
 }
 
-export const { auth, signIn, signOut } = NextAuth({
+export const { auth, handlers, signIn, signOut } = NextAuth({
     ...authConfig,
     providers: [
         Credentials({
@@ -73,7 +76,6 @@ export const { auth, signIn, signOut } = NextAuth({
                     .safeParse(credentials);
 
                 if (!parsedCredentials.success) {
-                    console.log('Invalid credentials');
                     return null;
                 }
 
@@ -81,7 +83,6 @@ export const { auth, signIn, signOut } = NextAuth({
                 const user = await authenticate(email, password);
 
                 if (!user) {
-                    console.log('Invalid credentials');
                     return null;  // Return null if authentication fails
                 }
                 return user;

@@ -25,12 +25,12 @@ class PricingRule(PricingRuleBase, table=True):
     
     created_at: datetime = Field(
         default_factory=now_madrid,
-        sa_column=Column(DateTime(timezone=True), default=datetime.now, nullable=False)
+        sa_column=Column(DateTime(timezone=True), default=now_madrid, nullable=False)
     )
 
     updated_at: datetime = Field(
         default_factory=now_madrid,
-        sa_column=Column(DateTime(timezone=True), default=datetime.now, onupdate=datetime.now, nullable=False)
+        sa_column=Column(DateTime(timezone=True), default=now_madrid, onupdate=now_madrid, nullable=False)
     )
 
 

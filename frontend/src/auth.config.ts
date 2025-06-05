@@ -22,11 +22,15 @@ export const authConfig = {
       return true; // Allow access to other pages
     },
     async session({ session, token }) {
-      if (session.user) session.user.role = token.role as string
+      if (session.user) session.user.role = token.role as string;
+      session.accessToken = token.accessToken as string;
       return session;
     },
     async jwt({ token, user}) {
-      if (user) token.role = user.role;
+      if (user) { 
+        token.role = user.role;
+        token.accessToken = user.accessToken       
+      }
       return token;
     },
   },

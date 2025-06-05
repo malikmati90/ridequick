@@ -11,7 +11,6 @@ import jwt
 from jwt.exceptions import InvalidTokenError
 from app.core.config import settings
 
-from app.models import Driver, DriverFullOut
 
 @dataclass
 class EmailData:
@@ -20,9 +19,9 @@ class EmailData:
 
 
 def render_email_template(*, template_name: str, context: dict[str, Any]) -> str:
-    template_str = (
-        Path(__file__).parent / "email-templates" / "build" / template_name
-    ).read_text()
+    base_dir = Path(__file__).resolve().parent.parent  # This goes from utils.py up to app/
+    template_path = base_dir / "email-templates" / "build" / template_name
+    template_str = template_path.read_text()
     html_content = Template(template_str).render(context)
     return html_content
 
@@ -92,6 +91,40 @@ def generate_new_account_email(
             "password": password,
             "email": email_to,
             "link": settings.server_host,
+        },
+    )
+    return EmailData(html_content=html_content, subject=subject)
+
+
+def generate_booking_confirmation_email(data: dict[str, str]) -> EmailData:
+    subject = f"{settings.PROJECT_NAME} - Booking Confirmed"
+    
+    # Handle date and time as strings (since they come from metadata)
+    try:
+        # If date is in YYYY-MM-DD format, format it nicely
+        if len(data.get("date", "")) == 10:  # YYYY-MM-DD format
+            date_obj = datetime.strptime(data["date"], "%Y-%m-%d")
+            formatted_date = date_obj.strftime("%d %B %Y")
+        else:
+            formatted_date = data.get("date", "Not specified")
+    except (ValueError, KeyError):
+        formatted_date = data.get("date", "Not specified")
+    
+    html_content = render_email_template(
+        template_name="booking_confirmation.html",
+        context={
+            "project_name": settings.PROJECT_NAME,
+            "frontend_host": settings.FRONTEND_HOST,
+            "booking_id": data.get("booking_id", "Unknown"),
+            "pickup": data.get("pickup", "Not specified"),
+            "destination": data.get("destination", "Not specified"),
+            "date": formatted_date,
+            "time": data.get("time", "Not specified"),
+            "vehicle": data.get("vehicle", "Not specified"),
+            "fare": data.get("fare", "Not specified"),
+            "passengers": data.get("passengers", "Not specified"),
+            "name": data.get("name", "Not specified"),
+            "phone": data.get("phone", "Not specified"),
         },
     )
     return EmailData(html_content=html_content, subject=subject)
