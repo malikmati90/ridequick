@@ -20,7 +20,7 @@ class EmailData:
 
 def render_email_template(*, template_name: str, context: dict[str, Any]) -> str:
     base_dir = Path(__file__).resolve().parent.parent  # This goes from utils.py up to app/
-    template_path = base_dir / "email-templates" / "build" / template_name
+    template_path = base_dir / "email-templates" / "html" / template_name
     template_str = template_path.read_text()
     html_content = Template(template_str).render(context)
     return html_content
